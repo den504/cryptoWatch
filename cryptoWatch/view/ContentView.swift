@@ -5,9 +5,13 @@
 //  Created by Dennis Okafor on 22/03/2026.
 //
 
+//import SwiftUI
+
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var coinViewModel: CoinViewModel
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -20,6 +24,6 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView().environmentObject(CoinViewModel())
+//}
