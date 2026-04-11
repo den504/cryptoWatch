@@ -11,13 +11,12 @@ struct TestContentView: View {
                 .imageScale(.large)
                 .foregroundStyle(.tint)
             Text("Hello, world!")
-            Text("testing pull!!")
             
             if coinViewModel.coins.isEmpty {
                 Text("Loading coins...")
             } else {
                 List(coinViewModel.coins, id: \.id) { coin in
-                    Text(coin.name)
+                    Text(coin.id)
                 }
             }
             
@@ -29,7 +28,7 @@ struct TestContentView: View {
         .padding()
         .onAppear {
             // ← watchlist test
-            let wm = WatchListViewModel(context: context)
+            let wm = WatchListManager(context: context)
             wm.add("bitcoin")
             wm.add("ethereum")
             print("After adding:", wm.load())      // ["bitcoin", "ethereum"]
@@ -40,6 +39,9 @@ struct TestContentView: View {
 }
 
 #Preview {
-    TestContentView()
-        .environmentObject(CoinViewModel(context: try! ModelContainer(for: WatchList.self).mainContext))
+    let container = {try! ModelContainer(for: WatchList.self)}()
+    return TestContentView()
+        .environmentObject(CoinViewModel(context: container.mainContext))
+        .modelContainer(container)
+//        .environmentObject(CoinViewModel(context: try! ModelContainer(for: WatchList.self).mainContext))
 }
