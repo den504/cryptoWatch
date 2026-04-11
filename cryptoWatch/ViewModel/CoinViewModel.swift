@@ -11,7 +11,7 @@ import SwiftData
 
 class CoinViewModel: ObservableObject {
     @Published var coins: [Coin] = []
-    @Published var watchlistCoins: [Coin] = []  // ← filtered coin array for watchList selected
+    @Published var watchlistCoins: [Coin] = []  // ← placed to get filtered coin array for watchList selected
     @Published var errorMessage: String?
     
     private let coinService = CoinAPIService()
@@ -26,6 +26,7 @@ class CoinViewModel: ObservableObject {
     
     func getCoins() async {
         do {
+            
             let coinData = try await coinService.fetchCoins()
             self.coins = coinData
             updateWatchlist()  // ← after coins load, build watchlist immediately
@@ -37,6 +38,8 @@ class CoinViewModel: ObservableObject {
     // ← new: matches saved IDs against live coins
     func updateWatchlist() {
         let savedIDs = wm.load()
+        //filtering the required watchlist happens here called on the UI using
+        //coinViewModel.watchlistCoins i.e having coinViewModel as the object from CoinViewModel
         watchlistCoins = coins.filter { savedIDs.contains($0.id) }
     }
     
