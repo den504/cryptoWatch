@@ -11,6 +11,7 @@ struct TestContentView: View {
                 .imageScale(.large)
                 .foregroundStyle(.tint)
             Text("Hello, world!")
+            Text("Hello, world!")
             
             if coinViewModel.coins.isEmpty {
                 Text("Loading coins...")
