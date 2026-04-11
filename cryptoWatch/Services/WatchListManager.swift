@@ -1,15 +1,18 @@
 //
-//  WatchListViewModel.swift
+//  WatchListManager.swift
 //  cryptoWatch
 //
 //  Created by Dennis Okafor on 08/04/2026.
 //
 
+//saves and removes data to swiftdata
+
 import SwiftData
 import Foundation
 
-class WatchListViewModel {
+class WatchListManager {
     private var context: ModelContext
+    
     
     init(context: ModelContext) {
         self.context = context
@@ -17,7 +20,7 @@ class WatchListViewModel {
     // Fetch all saved IDs
     func load() -> [String] {
         let items = (try? context.fetch(FetchDescriptor<WatchList>())) ?? []
-        return items.map { $0.coinId }
+        return items.map { $0.coinId } 
     }
     
     func add(_ coinId: String) {

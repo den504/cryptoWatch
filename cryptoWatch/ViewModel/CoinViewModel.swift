@@ -11,14 +11,14 @@ import SwiftData
 
 class CoinViewModel: ObservableObject {
     @Published var coins: [Coin] = []
-    @Published var watchlistCoins: [Coin] = []  // ← new
+    @Published var watchlistCoins: [Coin] = []  // ← filtered coin array for watchList selected
     @Published var errorMessage: String?
     
     private let coinService = CoinAPIService()
-    private var wm: WatchListViewModel  // ← new
+    private var wm: WatchListManager  // ← new
     
     init(context: ModelContext) {  // ← now accepts SwiftData context
-        self.wm = WatchListViewModel(context: context)
+        self.wm = WatchListManager(context: context)
         Task {
             await getCoins()
         }
@@ -41,9 +41,14 @@ class CoinViewModel: ObservableObject {
     }
     
     // ← new: called when user taps "Add to watchlist"
-    func addToWatchlist(_ coin: Coin) {
-        wm.add(coin.id)
-        updateWatchlist()
+    // presents a list of updated coin data which have being saved previously
+    // the only property added to the db is the coin id, we then use the coinid
+    // to get the latest data on the watch list- therefore watch list is always updated
+    //Note: Just as Markets gets live updates,  watchlist needs to get updated
+    func addToWatchlist(_ coin: Coin) { //takes all coin object
+        wm.add(coin.id) //just adds the coin id to an db
+        updateWatchlist() // loads db , with new coin in it as updated from above, then uses
+        //
     }
     
     // ← new: called when user taps remove

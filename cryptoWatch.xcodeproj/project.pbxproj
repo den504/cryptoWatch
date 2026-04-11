@@ -12,7 +12,7 @@
 
 /* Begin PBXFileReference section */
 		569EC1472F70E5230088E518 /* README.MD */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.MD; sourceTree = "<group>"; };
-		56E4784C2F843EB6006F701D /* cryptoWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = cryptoWatch.app; path = "/Users/dennisokafor/Desktop/Swift/cryptoWatch/build/Debug-iphoneos/cryptoWatch.app"; sourceTree = "<absolute>"; };
+		56E478802F8784CE006F701D /* cryptoWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = cryptoWatch.app; path = "/Users/dennisokafor/Desktop/Swift/cryptoWatch/build/Debug-iphoneos/cryptoWatch.app"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -64,7 +64,7 @@
 			packageProductDependencies = (
 			);
 			productName = cryptoWatch;
-			productReference = 56E4784C2F843EB6006F701D /* cryptoWatch.app */;
+			productReference = 56E478802F8784CE006F701D /* cryptoWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -271,7 +271,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -303,7 +303,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
