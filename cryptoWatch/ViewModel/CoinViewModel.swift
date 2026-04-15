@@ -13,6 +13,7 @@ class CoinViewModel: ObservableObject {
     @Published var coins: [Coin] = []
     @Published var watchlistCoins: [Coin] = []  // ← placed to get filtered coin array for watchList selected
     @Published var errorMessage: String?
+    @Published var selectedCoin: Coin? = nil
     
     private let coinService = CoinAPIService()
     private var wm: WatchListManager  // ← new
@@ -64,6 +65,12 @@ class CoinViewModel: ObservableObject {
     func isInWatchlist(_ coin: Coin) -> Bool {
         return wm.contains(coin.id)
     }
+    
+    func selectCoin(_ coin: Coin){
+        selectedCoin = coin
+    }
+    
+    
     
     private func handleError(_ error: Error) {
         switch error {
