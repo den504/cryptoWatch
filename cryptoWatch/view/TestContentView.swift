@@ -29,6 +29,7 @@ struct TestContentView: View {
         .padding()
         .onAppear {
             // ← watchlist test
+            // once WatchlistManager is called you can use
             let wm = WatchListManager(context: context)
             wm.add("bitcoin")
             wm.add("ethereum")
@@ -40,9 +41,9 @@ struct TestContentView: View {
 }
 
 #Preview {
-    let container = {try! ModelContainer(for: WatchList.self)}()
-    return TestContentView()
-        .environmentObject(CoinViewModel(context: container.mainContext))
-        .modelContainer(container)
+//    let container = {try! ModelContainer(for: WatchList.self)}()
+//    return TestContentView()
+//        .environmentObject(CoinViewModel(context: container.mainContext))
+//        .modelContainer(container)
 //        .environmentObject(CoinViewModel(context: try! ModelContainer(for: WatchList.self).mainContext))
 }
