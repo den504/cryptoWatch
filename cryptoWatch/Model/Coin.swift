@@ -24,7 +24,7 @@
 
 import Foundation
 
-struct Coin: Codable, Sendable, Identifiable {
+struct Coin: Codable, Sendable, Identifiable, Hashable {
     let id, symbol, name, image: String
     let currentPrice, priceChangePercentage24h, high24h, low24h, circulatingSupply, ath : Double
     let totalVolume,marketCap : Double

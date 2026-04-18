@@ -26,7 +26,8 @@ struct cryptoWatchApp: App {
     
     var body: some Scene {
         WindowGroup {
-            TestContentView()
+                
+            ContentView()
                 .environmentObject(vm)
                 .modelContainer(container)
         }

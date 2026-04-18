@@ -75,7 +75,7 @@ class CoinViewModel: ObservableObject {
     private func handleError(_ error: Error) {
         switch error {
         case NetworkError.coinNotFound:
-            errorMessage = "City not found, Please check the spelling"
+            errorMessage = "Coin not found, Please check the spelling"
         case NetworkError.decodingError:
             errorMessage = "Failed to process coin data"
         case NetworkError.invalidResponse:
