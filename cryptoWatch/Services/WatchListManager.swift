@@ -19,23 +19,38 @@ class WatchListManager {
     }
     // Fetch all saved IDs
     func load() -> [String] {
-        let items = (try? context.fetch(FetchDescriptor<WatchList>())) ?? []
-        return items.map { $0.coinId } 
+        do {
+            let items = (try context.fetch(FetchDescriptor<WatchList>()))
+            return items.map { $0.coinId }
+        } catch {
+            print("load() failed: /(error)")
+            return []
+        }
     }
     
     func add(_ coinId: String) {
         if !contains(coinId) {
             context.insert(WatchList(coinId: coinId))
-            try? context.save()
+            do{ try context.save()
+                print("coin added \(coinId)")
+            } catch {
+                print("add() failed for \(coinId): \(error)")
+            }
         }
     }
     
     func remove(_ coinId: String) {
-        let items = (try? context.fetch(FetchDescriptor<WatchList>())) ?? []
-        if let match = items.first(where: { $0.coinId == coinId }) {
-            context.delete(match)
-            try? context.save()
+        do {
+            let items = (try context.fetch(FetchDescriptor<WatchList>()))
+            if let match = items.first(where: { $0.coinId == coinId }) {
+                context.delete(match)
+                try context.save()
+                print("removed \(coinId)")
+            }
+        }catch{
+            print("remove() failed for \(coinId)")
         }
+
     }
     
     func contains(_ coinId: String) -> Bool {
