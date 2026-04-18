@@ -45,4 +45,32 @@ struct Coin: Codable, Sendable, Identifiable, Hashable {
         case totalVolume = "total_volume"
         case marketCap = "market_cap"
     }
+    
+    
+}
+
+extension Coin {
+    var formattedMarketCap: String {
+        abbreviate(marketCap, "£")
+    }
+    
+    var formattedTotalVolume: String {
+        abbreviate(totalVolume, "£" )
+    }
+    
+    var formattedHigh24h: String {
+        abbreviate(high24h, "£")
+    }
+    
+    var formattedLow24h: String {
+        abbreviate(low24h, "£")
+    }
+    
+    var formattedAth: String {
+        abbreviate(ath, "£")
+    }
+    
+    var formattedCirculatingSupply: String {
+        abbreviate(circulatingSupply, "£")
+    }
 }
