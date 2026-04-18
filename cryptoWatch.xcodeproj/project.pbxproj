@@ -11,8 +11,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		569EC1352F70E2760088E518 /* cryptoWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cryptoWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		569EC1472F70E5230088E518 /* README.MD */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.MD; sourceTree = "<group>"; };
+		665CF3892F8BE29500AEC0D9 /* cryptoWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cryptoWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -39,16 +39,8 @@
 			children = (
 				569EC1472F70E5230088E518 /* README.MD */,
 				569EC1372F70E2760088E518 /* cryptoWatch */,
-				569EC1362F70E2760088E518 /* Products */,
+				665CF3892F8BE29500AEC0D9 /* cryptoWatch.app */,
 			);
-			sourceTree = "<group>";
-		};
-		569EC1362F70E2760088E518 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				569EC1352F70E2760088E518 /* cryptoWatch.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -73,7 +65,7 @@
 			packageProductDependencies = (
 			);
 			productName = cryptoWatch;
-			productReference = 569EC1352F70E2760088E518 /* cryptoWatch.app */;
+			productReference = 665CF3892F8BE29500AEC0D9 /* cryptoWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -101,7 +93,7 @@
 			mainGroup = 569EC12C2F70E2760088E518;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 569EC1362F70E2760088E518 /* Products */;
+			productRefGroup = 569EC12C2F70E2760088E518;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -280,7 +272,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -312,7 +304,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

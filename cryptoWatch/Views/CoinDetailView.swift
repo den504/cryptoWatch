@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct CoinDetailView: View {
+    @EnvironmentObject var coinViewModel: CoinViewModel
     @Environment(\.dismiss) var dismiss
+    
+    let coin: Coin
+
     var body: some View {
         VStack{
             Button{
@@ -18,24 +22,39 @@ struct CoinDetailView: View {
                 HStack{
                     Image(systemName:"chevron.left")
                     Text("Markets")
-                }.foregroundColor(.gray).font(.title2).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top))
+                }.foregroundColor(.gray).font(.title3).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top))
             }
             
             HStack{
-                Circle().fill(Color.green).frame(width:100, height: 100).overlay(Text("B").font(.title).foregroundColor(.white)).padding(.trailing, 6)
+                if let imageURL =  URL(string: coin.image), !coin.image.isEmpty{
+                    AsyncImage(url: imageURL) { image in
+                        image
+                            .resizable()
+                            .scaledToFill()
+                    } placeholder: {
+                        ProgressView()
+                    }
+                    .frame(width: 40, height: 40)
+                    .clipShape(Circle())
+                    
+                } else {
+                    Circle().fill(Color.green).frame(width:100, height: 100).overlay(Text("B").font(.title).foregroundColor(.white)).padding(.trailing, 6)
+                }
+                
                 
                 VStack{
-                    Text("Solana").font(.largeTitle).bold().padding(.leading, 6)
-                    Text("SOL - Rank #5").font(.headline).foregroundColor(.secondary).padding(.leading, 5)
+                    Text(coin.name).font(.largeTitle).bold().padding(.leading, 6).frame(maxWidth: .infinity, alignment: .leading)
+                    Text(coin.symbol).font(.headline).foregroundColor(.secondary).padding(.leading, 5).textCase(.uppercase).frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
             }.padding(.top, 20).padding(.bottom, 5).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top))
             
-            Text("$158.40").font(.system(size: 50)).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading)
+            Text("\(coin.currentPrice, specifier: "%.2f")").font(.system(size: 50)).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading)
             
             HStack{
                 Image(systemName:"arrowtriangle.down.fill")
-                Text("£1.39 -0.87% (24h)")
+//                Text("-0.87% (24h)")
+                Text("\(coin.priceChangePercentage24h >= 0 ? "+" : "")\(coin.priceChangePercentage24h, specifier: "%.2f")% (24h)")
             }.foregroundColor(.red).font(.title3).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).padding(.bottom, 40)
             
             VStack(spacing: 15){
@@ -83,17 +102,24 @@ struct CoinDetailView: View {
             }.padding(.bottom)
             
             
-            Button(action: {print("Added to Watchlist")}){
+            let isAdded = coinViewModel.isInWatchlist(coin)
+            
+            Button(action: {
+                coinViewModel.addToWatchlist(coin)
+                print("Added to Watchlist")}){
                 HStack{
                     Image(systemName: "bookmark.circle.fill")
-                    Text("Add to Watchlist")
-                }.padding().frame(maxWidth: .infinity).background(Color.green).foregroundColor(.white).font(.headline).cornerRadius(15)
-                }
-        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading).padding()
+                    Text(!isAdded ? "Add to Watchlist" : "Added to Watchlist")
+                }.padding().frame(maxWidth: .infinity).background(!isAdded ? Color.green: Color.green.opacity(0.4)).foregroundColor(.white).font(.headline).cornerRadius(15)
+                }.buttonStyle(.plain).disabled(isAdded)
+            
+            
+
+        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading).padding().navigationBarBackButtonHidden(true)
         
     }
 }
 
 #Preview {
-    CoinDetailView().preferredColorScheme(.dark)
+//    CoinDetailView().preferredColorScheme(.dark)
 }

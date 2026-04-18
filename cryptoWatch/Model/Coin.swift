@@ -1,0 +1,32 @@
+//
+//  Coin.swift
+//  cryptoWatch
+//
+//  Created by Dennis Okafor on 04/04/2026.
+//
+
+//{
+//  "id": "bitcoin",                              // unique identifier for API calls
+//  "symbol": "btc",                              // "BTC" label
+//  "name": "Bitcoin",                            // "Bitcoin" label
+//  "image": "https://coin-images.coingecko...",  // coin logo
+//  "current_price": 67441,                       // "$63,241"
+//  "price_change_percentage_24h": 0.61445,       // "+3.21%"
+//  "market_cap_rank": 1                          // for sorting the list
+//}
+
+import Foundation
+
+struct Coin: Codable, Sendable, Identifiable, Hashable {
+    let id, symbol, name, image: String
+    let currentPrice, priceChangePercentage24h: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case symbol
+        case name
+        case image
+        case currentPrice = "current_price"
+        case priceChangePercentage24h = "price_change_percentage_24h"
+    }
+}
