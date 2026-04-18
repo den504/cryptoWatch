@@ -61,13 +61,13 @@ struct CoinDetailView: View {
                 HStack(spacing: 15){
                     VStack{
                         Text("Market Cap").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text("£72.1B").font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
+                        Text(coin.formattedMarketCap).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
                     }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
                         .stroke(Color.gray, lineWidth: 1))
                     
                     VStack{
                         Text("24h volume ").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text("£3.8B").font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
+                        Text(coin.formattedTotalVolume).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
                     }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
                         .stroke(Color.gray, lineWidth: 1))
                 }
@@ -75,13 +75,13 @@ struct CoinDetailView: View {
                 HStack(spacing: 15){
                     VStack{
                         Text("24H High").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text("£168.80").font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
+                        Text(coin.formattedHigh24h).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
                     }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
                         .stroke(Color.gray, lineWidth: 1))
                     
                     VStack{
                         Text("24h Low ").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text("£155.20").font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
+                        Text(coin.formattedLow24h).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
                     }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
                         .stroke(Color.gray, lineWidth: 1))
                 }
@@ -89,13 +89,13 @@ struct CoinDetailView: View {
                 HStack(spacing: 15){
                     VStack{
                         Text("All time High").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text("£260.06").font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
+                        Text(coin.formattedAth).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
                     }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
                         .stroke(Color.gray, lineWidth: 1))
                     
                     VStack{
                         Text("Circulating ").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text("£465M ").font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
+                        Text(coin.formattedCirculatingSupply).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
                     }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
                         .stroke(Color.gray, lineWidth: 1))
                 }
