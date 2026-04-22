@@ -15,6 +15,7 @@ class CoinViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var portfolioItems: [PortfolioItem] = []
     @Published var totalPortfolioValue: Double = 0
+    @Published var selectedCoin: Coin? = nil
     
     private let coinService = CoinAPIService()
     private var wm: WatchListManager  // ← new
@@ -71,27 +72,6 @@ class CoinViewModel: ObservableObject {
     }
     
     
-//    func updatePortfolio() {
-//        let portfolioItems = portfolioManager.loadPortfolio()
-//
-//        // 1. Build UI list (coins user owns)
-//        portfolioCoins = coins.filter { coin in
-//            portfolioItems.contains(where: { $0.coinId == coin.id })
-//        }
-//
-//        // 2. Calculate per-coin + total value
-//        var total: Double = 0
-//
-//        for item in portfolioItems {
-//            if let coin = coins.first(where: { $0.id == item.coinId }) {
-//                let value = item.amount * coin.currentPrice
-//                total += value
-//            }
-//        }
-//
-//        totalPortfolioValue = total
-//    }
-    
     func updatePortfolio() {
         let portfolioCoins = portfolioManager.loadPortfolio()
 
@@ -124,6 +104,11 @@ class CoinViewModel: ObservableObject {
     func isInPortfolio(_ coin: Coin) -> Bool {
         portfolioManager.contains(coin.id)
     }
+    func selectCoin(_ coin: Coin){
+        selectedCoin = coin
+    }
+    
+    
     
     private func handleError(_ error: Error) {
         switch error {
