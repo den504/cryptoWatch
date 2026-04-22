@@ -13,13 +13,17 @@ class CoinViewModel: ObservableObject {
     @Published var coins: [Coin] = []
     @Published var watchlistCoins: [Coin] = []  // ← placed to get filtered coin array for watchList selected
     @Published var errorMessage: String?
+    @Published var portfolioItems: [PortfolioItem] = []
+    @Published var totalPortfolioValue: Double = 0
     @Published var selectedCoin: Coin? = nil
     
     private let coinService = CoinAPIService()
     private var wm: WatchListManager  // ← new
+    private var portfolioManager: PortfolioManager
     
     init(context: ModelContext) {  // ← now accepts SwiftData context
         self.wm = WatchListManager(context: context)
+        self.portfolioManager = PortfolioManager(context: context)
         Task {
             await getCoins()
         }
@@ -31,6 +35,7 @@ class CoinViewModel: ObservableObject {
             let coinData = try await coinService.fetchCoins()
             self.coins = coinData
             updateWatchlist()  // ← after coins load, build watchlist immediately
+            updatePortfolio()
         } catch {
             handleError(error)
         }
@@ -66,6 +71,39 @@ class CoinViewModel: ObservableObject {
         return wm.contains(coin.id)
     }
     
+    
+    func updatePortfolio() {
+        let portfolioCoins = portfolioManager.loadPortfolio()
+
+        portfolioItems = portfolioCoins.compactMap { item in
+            if let coin = coins.first(where: { $0.id == item.coinId }) {
+                return PortfolioItem(
+                    id: coin.id,
+                    coin: coin,
+                    amount: item.amount,
+                )
+            }
+            return nil
+        }
+
+        totalPortfolioValue = portfolioItems.reduce(0) { $0 + $1.value }
+    }
+    
+    func addToPortfolio(coinId: String, amount: Double) {
+        portfolioManager.addOrUpdate(coinId, amount: amount)
+
+        updatePortfolio()
+    }
+    
+    func removeFromPortfolio(coinId: String) {
+        portfolioManager.remove(coinId)
+
+        updatePortfolio()
+    }
+    
+    func isInPortfolio(_ coin: Coin) -> Bool {
+        portfolioManager.contains(coin.id)
+    }
     func selectCoin(_ coin: Coin){
         selectedCoin = coin
     }
