@@ -10,6 +10,8 @@ import SwiftUI
 struct CoinDetailView: View {
     @EnvironmentObject var coinViewModel: CoinViewModel
     @Environment(\.dismiss) var dismiss
+    @State private var showPortfolioSheet = false
+    @State private var holdingAmount: String = ""
     
     let coin: Coin
 
@@ -104,14 +106,32 @@ struct CoinDetailView: View {
             
             let isAdded = coinViewModel.isInWatchlist(coin)
             
-            Button(action: {
-                coinViewModel.addToWatchlist(coin)
-                print("Added to Watchlist")}){
-                HStack{
-                    Image(systemName: "bookmark.circle.fill")
-                    Text(!isAdded ? "Add to Watchlist" : "Added to Watchlist")
-                }.padding().frame(maxWidth: .infinity).background(!isAdded ? Color.green: Color.green.opacity(0.4)).foregroundColor(.white).font(.headline).cornerRadius(15)
-                }.buttonStyle(.plain).disabled(isAdded)
+            //Place here when already in portfolio view model has being created
+//            let isInPortofolio = coinViewModel.isInWatchlist(coin)
+            
+            HStack(spacing: 12){
+                //add  isInPortofolio is portfolio  view model is added
+                Button(action: {
+                    showPortfolioSheet = true }){
+                    HStack{
+                        Image(systemName: "plus.circle.fill")
+                        Text("Add to Portfolio")
+                    }.padding().frame(maxWidth: .infinity).background(Color.blue).foregroundColor(.white).font(.headline).cornerRadius(15)
+                    }.buttonStyle(.plain)
+                
+                Button(action: {
+                    coinViewModel.addToWatchlist(coin)
+                    print("Added to Watchlist")}){
+                    HStack{
+                        Image(systemName: "bookmark.circle.fill")
+                        Text(!isAdded ? "Add to Watchlist" : "Added to Watchlist")
+                    }.padding().frame(maxWidth: .infinity).background(!isAdded ? Color.green: Color.green.opacity(0.4)).foregroundColor(.white).font(.headline).cornerRadius(15)
+                    }.buttonStyle(.plain).disabled(isAdded)
+            }
+            .sheet(isPresented: $showPortfolioSheet){
+                PortfolioSheetView(coin: coin)
+                    .presentationDetents([.medium])
+            }
             
             
 
