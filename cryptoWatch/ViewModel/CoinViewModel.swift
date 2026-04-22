@@ -13,12 +13,16 @@ class CoinViewModel: ObservableObject {
     @Published var coins: [Coin] = []
     @Published var watchlistCoins: [Coin] = []  // ← placed to get filtered coin array for watchList selected
     @Published var errorMessage: String?
+    @Published var portfolioItems: [PortfolioItem] = []
+    @Published var totalPortfolioValue: Double = 0
     
     private let coinService = CoinAPIService()
     private var wm: WatchListManager  // ← new
+    private var portfolioManager: PortfolioManager
     
     init(context: ModelContext) {  // ← now accepts SwiftData context
         self.wm = WatchListManager(context: context)
+        self.portfolioManager = PortfolioManager(context: context)
         Task {
             await getCoins()
         }
@@ -30,6 +34,7 @@ class CoinViewModel: ObservableObject {
             let coinData = try await coinService.fetchCoins()
             self.coins = coinData
             updateWatchlist()  // ← after coins load, build watchlist immediately
+            updatePortfolio()
         } catch {
             handleError(error)
         }
@@ -63,6 +68,61 @@ class CoinViewModel: ObservableObject {
     // ← new: used to toggle button state on detail screen
     func isInWatchlist(_ coin: Coin) -> Bool {
         return wm.contains(coin.id)
+    }
+    
+    
+//    func updatePortfolio() {
+//        let portfolioItems = portfolioManager.loadPortfolio()
+//
+//        // 1. Build UI list (coins user owns)
+//        portfolioCoins = coins.filter { coin in
+//            portfolioItems.contains(where: { $0.coinId == coin.id })
+//        }
+//
+//        // 2. Calculate per-coin + total value
+//        var total: Double = 0
+//
+//        for item in portfolioItems {
+//            if let coin = coins.first(where: { $0.id == item.coinId }) {
+//                let value = item.amount * coin.currentPrice
+//                total += value
+//            }
+//        }
+//
+//        totalPortfolioValue = total
+//    }
+    
+    func updatePortfolio() {
+        let portfolioCoins = portfolioManager.loadPortfolio()
+
+        portfolioItems = portfolioCoins.compactMap { item in
+            if let coin = coins.first(where: { $0.id == item.coinId }) {
+                return PortfolioItem(
+                    id: coin.id,
+                    coin: coin,
+                    amount: item.amount,
+                )
+            }
+            return nil
+        }
+
+        totalPortfolioValue = portfolioItems.reduce(0) { $0 + $1.value }
+    }
+    
+    func addToPortfolio(coinId: String, amount: Double) {
+        portfolioManager.addOrUpdate(coinId, amount: amount)
+
+        updatePortfolio()
+    }
+    
+    func removeFromPortfolio(coinId: String) {
+        portfolioManager.remove(coinId)
+
+        updatePortfolio()
+    }
+    
+    func isInPortfolio(_ coin: Coin) -> Bool {
+        portfolioManager.contains(coin.id)
     }
     
     private func handleError(_ error: Error) {
