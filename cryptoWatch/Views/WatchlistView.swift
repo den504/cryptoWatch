@@ -12,7 +12,6 @@ struct WatchlistView: View {
     @EnvironmentObject var coinViewModel : CoinViewModel
     @Environment(\.modelContext) var context
     
-    
     var isLoading: Bool {
         coinViewModel.watchlistCoins.isEmpty && coinViewModel.errorMessage == nil
     }
@@ -153,6 +152,6 @@ struct WatchlistView: View {
     
 #Preview {
 //    WatchlistView().preferredColorScheme(.dark)
-    let container = {try! ModelContainer(for: WatchList.self)}()
-    return WatchlistView().environmentObject(CoinViewModel(context: container.mainContext)).preferredColorScheme(.dark)
+//    let container = {try! ModelContainer(for: WatchList.self)}()
+//    return WatchlistView().environmentObject(CoinViewModel(context: container.mainContext)).preferredColorScheme(.dark)
 }

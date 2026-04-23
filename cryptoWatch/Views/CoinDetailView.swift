@@ -130,6 +130,7 @@ struct CoinDetailView: View {
             }
             .sheet(isPresented: $showPortfolioSheet){
                 PortfolioSheetView(coin: coin)
+                    .environmentObject(coinViewModel)
                     .presentationDetents([.medium])
             }
             

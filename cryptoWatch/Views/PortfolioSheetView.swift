@@ -8,13 +8,15 @@ import SwiftUI
 
 struct PortfolioSheetView : View {
     let coin: Coin //from the Market view, to the CoinDetail, to PortfolioSheetView
+    @EnvironmentObject var coinViewModel: CoinViewModel
     @State private var holdingAmount: String = ""
     @Environment(\.dismiss) var dismiss
+
     
     //compute VAR for current value
-    var currentValue: Double{
+    var currentValue: Double {
         let amount = Double(holdingAmount) ?? 0
-        return amount * coin.currentPrice
+        return (amount * coin.currentPrice).rounded()
     }
     
     
@@ -94,7 +96,11 @@ struct PortfolioSheetView : View {
             
             //Button for Save holding
             Button {
-                //logic to save holding
+                let amount = Double(holdingAmount) ?? 0
+                if amount > 0 {
+                    coinViewModel.addToPortfolio(coinId: coin.id, amount: amount)
+                    print("Saved \(amount) of \(coin.name) to portfolio")
+                }
                 dismiss()
             } label: {
                 Text("Save holding")
