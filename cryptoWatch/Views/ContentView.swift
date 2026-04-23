@@ -17,6 +17,10 @@ struct ContentView: View {
             WatchlistView().tabItem {
                 Label("Watchlist", systemImage: "bookmark")
             }
+            PortfolioView().tabItem {
+                Label("Portfolio", systemImage: "dollarsign.circle")
+            }
+            
         }
         
         

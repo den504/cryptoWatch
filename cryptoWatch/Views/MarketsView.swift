@@ -3,7 +3,7 @@
 //  cryptoWatch
 //
 //  Created by Chidubem Obinwanne on 06/04/2026.
-//
+// 
 
 import SwiftUI
 import SwiftData
@@ -13,6 +13,7 @@ struct MarketsView: View {
     @Environment(\.modelContext) var context
     
     @State private var selectedCoin: Coin?
+   
     
     
     var isLoading: Bool {
@@ -109,6 +110,6 @@ struct MarketsView: View {
 
 
 #Preview {
-    let container = {try! ModelContainer(for: WatchList.self)}()
-   return  MarketsView().environmentObject(CoinViewModel(context: container.mainContext)).preferredColorScheme(.dark)
+//    let container = {try! ModelContainer(for: WatchList.self)}()
+//   return  MarketsView().environmentObject(CoinViewModel(context: container.mainContext)).preferredColorScheme(.dark)
 }

@@ -16,7 +16,7 @@ struct cryptoWatchApp: App {
     
     init() {
         do {
-            let container = try ModelContainer(for: WatchList.self)
+            let container = try ModelContainer(for: WatchList.self, PortfolioCoin.self)
             self.container = container
             _vm = StateObject(wrappedValue: CoinViewModel(context: container.mainContext))
         } catch {
