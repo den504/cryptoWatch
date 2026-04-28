@@ -12,6 +12,7 @@ struct CoinDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showPortfolioSheet = false
     @State private var holdingAmount: String = ""
+    @Binding var selectedTab: Int
     
     let coin: Coin
 
@@ -105,19 +106,17 @@ struct CoinDetailView: View {
             
             
             let isAdded = coinViewModel.isInWatchlist(coin)
-            
-            //Place here when already in portfolio view model has being created
-//            let isInPortofolio = coinViewModel.isInWatchlist(coin)
+            let isInPortofolio = coinViewModel.isInPortfolio(coin)
             
             HStack(spacing: 12){
-                //add  isInPortofolio is portfolio  view model is added
+                
                 Button(action: {
                     showPortfolioSheet = true }){
                     HStack{
                         Image(systemName: "plus.circle.fill")
                         Text("Add to Portfolio")
                     }.padding().frame(maxWidth: .infinity).background(Color.blue).foregroundColor(.white).font(.headline).cornerRadius(15)
-                    }.buttonStyle(.plain)
+                    }.buttonStyle(.plain).disabled(isInPortofolio)
                 
                 Button(action: {
                     coinViewModel.addToWatchlist(coin)
@@ -129,7 +128,7 @@ struct CoinDetailView: View {
                     }.buttonStyle(.plain).disabled(isAdded)
             }
             .sheet(isPresented: $showPortfolioSheet){
-                PortfolioSheetView(coin: coin)
+                PortfolioSheetView(coin: coin, selectedTab: $selectedTab)
                     .environmentObject(coinViewModel)
                     .presentationDetents([.medium])
             }
