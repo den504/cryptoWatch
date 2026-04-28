@@ -11,6 +11,8 @@ struct PortfolioSheetView : View {
     @EnvironmentObject var coinViewModel: CoinViewModel
     @State private var holdingAmount: String = ""
     @Environment(\.dismiss) var dismiss
+    var existingAmount: Double? = nil
+    @Binding var selectedTab: Int
 
     
     //compute VAR for current value
@@ -23,6 +25,7 @@ struct PortfolioSheetView : View {
     var body: some View {
         
         VStack(spacing: 20){
+            
             //Add to portfolio
             HStack {
                 Text("Add to portfolio").font(.title2).bold()
@@ -100,6 +103,7 @@ struct PortfolioSheetView : View {
                 if amount > 0 {
                     coinViewModel.addToPortfolio(coinId: coin.id, amount: amount)
                     print("Saved \(amount) of \(coin.name) to portfolio")
+                    selectedTab = 2
                 }
                 dismiss()
             } label: {
@@ -114,6 +118,10 @@ struct PortfolioSheetView : View {
             }
             
             Spacer()
+        }.onAppear {
+            if let existing = existingAmount {
+                holdingAmount = String(existing)
+            }
         }
     }
 }

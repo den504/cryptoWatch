@@ -13,6 +13,7 @@ struct MarketsView: View {
     @Environment(\.modelContext) var context
     
     @State private var selectedCoin: Coin?
+    @Binding var selectedTab: Int
    
     
     
@@ -98,7 +99,7 @@ struct MarketsView: View {
                             }
                         //                        }.buttonStyle(.plain)
                     }.listStyle(.plain).scrollContentBackground(.hidden).navigationDestination(item: $selectedCoin) { coin in
-                        CoinDetailView(coin: coin)
+                        CoinDetailView(selectedTab: $selectedTab, coin: coin )
                     }
                 }
             }.padding(.horizontal, 10).padding(.top, 20)

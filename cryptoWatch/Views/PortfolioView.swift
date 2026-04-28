@@ -3,6 +3,9 @@ import SwiftData
 
 struct PortfolioView: View {
     @EnvironmentObject var coinViewModel: CoinViewModel
+    @State private var itemToDelete: String? = nil
+    @State private var selectedItem: PortfolioItem? = nil
+    @Binding var selectedTab: Int
 
     
     var body: some View {
@@ -79,13 +82,28 @@ struct PortfolioView: View {
                                     }
                                 }
                                 .padding(.horizontal)
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
+                                .onTapGesture {
+                                    selectedItem = item
+                                }
+                                .onLongPressGesture{
+                                    itemToDelete = item.id
+                                }
+                                .alert("Delete \(item.coin.name)?", isPresented: .constant(itemToDelete == item.id)){
+                                    Button("Delete", role: .destructive) {
                                         coinViewModel.removeFromPortfolio(coinId: item.coin.id)
-                                    } label: {
-                                        Image(systemName: "trash.fill")
+                                        itemToDelete = nil
+                                    }
+                                    Button ("Cancel", role: .cancel){
+                                        itemToDelete = nil
                                     }
                                 }
+//                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+//                                    Button(role: .destructive) {
+//                                        coinViewModel.removeFromPortfolio(coinId: item.coin.id)
+//                                    } label: {
+//                                        Image(systemName: "trash.fill")
+//                                    }
+//                                }
                             }
                         }
                     }
@@ -93,6 +111,12 @@ struct PortfolioView: View {
             }
             .background(Color.white.ignoresSafeArea())
             .navigationBarHidden(true)
+            .sheet(item: $selectedItem){item in
+                PortfolioSheetView(coin: item.coin, existingAmount: item.amount, selectedTab: $selectedTab)
+                    .environmentObject(coinViewModel)
+                    .presentationDetents([.medium])
+                
+            }
         }
         .task {
             coinViewModel.updatePortfolio()
