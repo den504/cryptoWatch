@@ -16,10 +16,12 @@ class CoinViewModel: ObservableObject {
     @Published var portfolioItems: [PortfolioItem] = []
     @Published var totalPortfolioValue: Double = 0
     @Published var selectedCoin: Coin? = nil
+    @Published var chartData: [CoinChart] = []
     
     private let coinService = CoinAPIService()
     private var wm: WatchListManager  // ← new
     private var portfolioManager: PortfolioManager
+    private let chartService = ChartAPIService()
     
     init(context: ModelContext) {  // ← now accepts SwiftData context
         self.wm = WatchListManager(context: context)
@@ -106,6 +108,27 @@ class CoinViewModel: ObservableObject {
     }
     func selectCoin(_ coin: Coin){
         selectedCoin = coin
+    }
+    
+    func fetchChartData (for coinId: String, filter: String) async {
+        let days: String
+        switch filter {
+            case "1W": days = "7"
+            case "1M": days = "30"
+//            case "1Y": days = "365"
+            default: days = "1"
+        }
+        
+        do {
+            chartData = try await chartService.fetchChartData(coinId: coinId, days: days)
+            print("Chart points loaded: \( chartData.count)")  // ← add this
+            print("First price: \( chartData.first?.price ?? 0)")  // ← add this
+            print("Last price: \( chartData.last?.price ?? 0)")   // ← add this
+//            chartData = data
+        } catch{
+            handleError(error)
+            print("Chart error: \(error)")
+        }
     }
     
     

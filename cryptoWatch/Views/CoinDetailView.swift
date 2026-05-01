@@ -4,141 +4,238 @@
 //
 //  Created by Chidubem Obinwanne on 10/04/2026.
 //
-
 import SwiftUI
+import Charts
 
 struct CoinDetailView: View {
     @EnvironmentObject var coinViewModel: CoinViewModel
     @Environment(\.dismiss) var dismiss
     @State private var showPortfolioSheet = false
     @State private var holdingAmount: String = ""
+    @State private var selectedFilter: String = "1M"
     @Binding var selectedTab: Int
     
     let coin: Coin
 
     var body: some View {
-        VStack{
-            Button{
-                dismiss()
-            }
-            label:{
-                HStack{
-                    Image(systemName:"chevron.left")
-                    Text("Markets")
-                }.foregroundColor(.gray).font(.title3).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top))
-            }
-            
-            HStack{
-                if let imageURL =  URL(string: coin.image), !coin.image.isEmpty{
-                    AsyncImage(url: imageURL) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    } placeholder: {
-                        ProgressView()
+        ScrollView {
+            VStack(spacing: 12) {
+                
+                // MARK: Back button
+                Button {
+                    dismiss()
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.left")
+                        Text("Markets")
                     }
-                    .frame(width: 40, height: 40)
-                    .clipShape(Circle())
+                    .foregroundColor(.gray)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
+                // MARK: Coin header
+                HStack {
+                    if let imageURL = URL(string: coin.image), !coin.image.isEmpty {
+                        AsyncImage(url: imageURL) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            ProgressView()
+                        }
+                        .frame(width: 40, height: 40)
+                        .clipShape(Circle())
+                    }
                     
+                    VStack(alignment: .leading) {
+                        Text(coin.name).font(.largeTitle).bold()
+                        Text(coin.symbol).font(.headline).foregroundColor(.secondary).textCase(.uppercase)
+                    }
+                    Spacer()
+                }
+                .padding(.top, 10)
+                
+                // MARK: Price
+                Text(coin.formattedCurrentPrice)
+                    .font(.system(size: 44)).fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                // MARK: Price change
+                HStack {
+                    Image(systemName: coin.priceChangePercentage24h >= 0 ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
+                    Text("\(coin.priceChangePercentage24h >= 0 ? "+" : "")\(coin.priceChangePercentage24h, specifier: "%.2f")% (24h)")
+                }
+                .foregroundColor(coin.priceChangePercentage24h >= 0 ? .green : .red)
+                .font(.title3).fontWeight(.semibold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                // MARK: Chart
+                if coinViewModel.chartData.isEmpty {
+                    ProgressView() //spins while waiting
+                        .frame(height: 150)
                 } else {
-                    Circle().fill(Color.green).frame(width:100, height: 100).overlay(Text("B").font(.title).foregroundColor(.white)).padding(.trailing, 6)
+                    Chart(coinViewModel.chartData) { point in
+                        LineMark(
+                            x: .value("Time", point.timestamp),
+                            y: .value("Price", point.price)
+                        )
+                        .foregroundStyle(Color.green)
+                        
+                        AreaMark(
+                            x: .value("Time", point.timestamp),
+                            y: .value("Price", point.price)
+                        )
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [Color.green.opacity(0.3), Color.clear],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                    }
+                    .chartXAxis(.hidden) //hides axis
+                    .chartYAxis(.hidden)
+                    .frame(height: 150)
                 }
                 
-                
-                VStack{
-                    Text(coin.name).font(.largeTitle).bold().padding(.leading, 6).frame(maxWidth: .infinity, alignment: .leading)
-                    Text(coin.symbol).font(.headline).foregroundColor(.secondary).padding(.leading, 5).textCase(.uppercase).frame(maxWidth: .infinity, alignment: .leading)
+                // MARK: Time filters
+                HStack(spacing: 12) {
+                    ForEach(["1D", "1W", "1M"], id: \.self) { filter in
+                        Button {
+                            selectedFilter = filter
+                            Task {
+                                await coinViewModel.fetchChartData(for: coin.id, filter: filter)
+                            }
+                        } label: {
+                            Text(filter)
+                                .font(.caption).bold()
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(selectedFilter == filter ? Color.green.opacity(0.3) : Color.clear)
+                                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.gray.opacity(0.4)))
+                                .cornerRadius(20)
+                                .foregroundColor(selectedFilter == filter ? .green : .gray)
+                        }
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 8)
                 
-            }.padding(.top, 20).padding(.bottom, 5).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top))
-            
-            Text("\(coin.currentPrice, specifier: "%.2f")").font(.system(size: 50)).fontWeight(.bold).frame(maxWidth: .infinity, alignment: .leading)
-            
-            HStack{
-                Image(systemName:"arrowtriangle.down.fill")
-//                Text("-0.87% (24h)")
-                Text("\(coin.priceChangePercentage24h >= 0 ? "+" : "")\(coin.priceChangePercentage24h, specifier: "%.2f")% (24h)")
-            }.foregroundColor(.red).font(.title3).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).padding(.bottom, 40)
-            
-            VStack(spacing: 15){
-                HStack(spacing: 15){
-                    VStack{
-                        Text("Market Cap").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text(coin.formattedMarketCap).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
-                    }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
-                        .stroke(Color.gray, lineWidth: 1))
-                    
-                    VStack{
-                        Text("24h volume ").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text(coin.formattedTotalVolume).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
-                    }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
-                        .stroke(Color.gray, lineWidth: 1))
-                }
-                
-                HStack(spacing: 15){
-                    VStack{
-                        Text("24H High").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text(coin.formattedHigh24h).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
-                    }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
-                        .stroke(Color.gray, lineWidth: 1))
-                    
-                    VStack{
-                        Text("24h Low ").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text(coin.formattedLow24h).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
-                    }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
-                        .stroke(Color.gray, lineWidth: 1))
-                }
-                
-                HStack(spacing: 15){
-                    VStack{
-                        Text("All time High").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text(coin.formattedAth).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
-                    }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
-                        .stroke(Color.gray, lineWidth: 1))
-                    
-                    VStack{
-                        Text("Circulating ").font(.headline).fontWeight(.semibold).frame(maxWidth: .infinity, alignment: .init(horizontal: .leading, vertical: .top)).textCase(.uppercase).foregroundColor(.gray)
-                        Text(coin.formattedCirculatingSupply).font(.title).bold().frame(maxWidth: .infinity, alignment: .topLeading)
-                    }.padding(20).border(Color.gray.opacity(0.3), width: 1).background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.15))
-                        .stroke(Color.gray, lineWidth: 1))
-                }
-            }.padding(.bottom)
-            
-            
-            let isAdded = coinViewModel.isInWatchlist(coin)
-            let isInPortofolio = coinViewModel.isInPortfolio(coin)
-            
-            HStack(spacing: 12){
-                
-                Button(action: {
-                    showPortfolioSheet = true }){
-                    HStack{
-                        Image(systemName: "plus.circle.fill")
-                        Text("Add to Portfolio")
-                    }.padding().frame(maxWidth: .infinity).background(Color.blue).foregroundColor(.white).font(.headline).cornerRadius(15)
-                    }.buttonStyle(.plain).disabled(isInPortofolio)
-                
-                Button(action: {
-                    coinViewModel.addToWatchlist(coin)
-                    print("Added to Watchlist")}){
-                    HStack{
-                        Image(systemName: "bookmark.circle.fill")
-                        Text(!isAdded ? "Add to Watchlist" : "Added to Watchlist")
-                    }.padding().frame(maxWidth: .infinity).background(!isAdded ? Color.green: Color.green.opacity(0.4)).foregroundColor(.white).font(.headline).cornerRadius(15)
-                    }.buttonStyle(.plain).disabled(isAdded)
-            }
-            .sheet(isPresented: $showPortfolioSheet){
-                PortfolioSheetView(coin: coin, selectedTab: $selectedTab)
-                    .environmentObject(coinViewModel)
-                    .presentationDetents([.medium])
-            }
-            
-            
 
-        }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading).padding().navigationBarBackButtonHidden(true)
-        
+                VStack(spacing: 12) {
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("MARKET CAP")
+                                .font(.caption).fontWeight(.semibold)
+                                .textCase(.uppercase).foregroundColor(.gray)
+                            Text(coin.formattedMarketCap)
+                                .font(.title2).bold()
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(16)
+                        .background(RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.opacity(0.15))
+                            .stroke(Color.gray, lineWidth: 1))
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("24H VOLUME")
+                                .font(.caption).fontWeight(.semibold)
+                                .textCase(.uppercase).foregroundColor(.gray)
+                            Text(coin.formattedTotalVolume)
+                                .font(.title2).bold()
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(16)
+                        .background(RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.opacity(0.15))
+                            .stroke(Color.gray, lineWidth: 1))
+                    }
+                    
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("24H HIGH")
+                                .font(.caption).fontWeight(.semibold)
+                                .textCase(.uppercase).foregroundColor(.gray)
+                            Text(coin.formattedHigh24h)
+                                .font(.title2).bold()
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(16)
+                        .background(RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.opacity(0.15))
+                            .stroke(Color.gray, lineWidth: 1))
+                        
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("24H LOW")
+                                .font(.caption).fontWeight(.semibold)
+                                .textCase(.uppercase).foregroundColor(.gray)
+                            Text(coin.formattedLow24h)
+                                .font(.title2).bold()
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(16)
+                        .background(RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.gray.opacity(0.15))
+                            .stroke(Color.gray, lineWidth: 1))
+                    }
+                }
+                
+                //Buttons
+                let isAdded = coinViewModel.isInWatchlist(coin)
+                let isInPortfolio = coinViewModel.isInPortfolio(coin)
+                
+                HStack(spacing: 12) {
+                    Button {
+                        showPortfolioSheet = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text(isInPortfolio ? "Added" : "Add to Portfolio")
+                        }
+                        .font(.subheadline).bold()  // ← smaller font
+                        .padding()
+                        .frame(maxWidth: .infinity, minHeight: 55)  // ← fixed height
+                        .background(isInPortfolio ? Color.blue.opacity(0.4) : Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(15)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isInPortfolio)
+                    
+                    Button {
+                        coinViewModel.addToWatchlist(coin)
+                    } label: {
+                        HStack {
+                            Image(systemName: "bookmark.circle.fill")
+                            Text(isAdded ? "Watching" : "Watch")
+                        }
+                        .font(.subheadline).bold()  // ← smaller font
+                        .padding()
+                        .frame(maxWidth: .infinity, minHeight: 55)  // ← fixed height
+                        .background(isAdded ? Color.green.opacity(0.4) : Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(15)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isAdded)
+                }
+                .padding(.top, 8)
+            }
+            .padding()
+        }
+        .navigationBarBackButtonHidden(true)
+        .sheet(isPresented: $showPortfolioSheet) {
+            PortfolioSheetView(coin: coin, selectedTab: $selectedTab)
+                .environmentObject(coinViewModel)
+                .presentationDetents([.medium])
+        }
+        .task {
+            coinViewModel.chartData = []
+            await coinViewModel.fetchChartData(for: coin.id, filter: "1D")
+        }
     }
 }
+
 
 #Preview {
 //    CoinDetailView().preferredColorScheme(.dark)
