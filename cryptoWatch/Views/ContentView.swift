@@ -16,7 +16,7 @@ struct ContentView: View {
                 .tabItem { Label("Markets", systemImage: "chart.bar.xaxis") }
                 .tag(0)  // ← show when number is 1
             
-            WatchlistView()
+            WatchlistView(selectedTab: $selectedTab)
                 .tabItem { Label("Watchlist", systemImage: "bookmark") }
                 .tag(1)  // ← show when number is 2
             
