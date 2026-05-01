@@ -35,8 +35,37 @@ struct MarketsView: View {
                 
                 if isLoading{
                     Text("Loading coins...")
-                }else if let error = coinViewModel.errorMessage{
-                    Text("Error \(error)").foregroundStyle(.red)
+                }else if coinViewModel.errorMessage != nil{
+                    VStack(spacing: 16) {
+                        Image(systemName: "wifi.exclamationmark")
+                            .font(.system(size: 50))
+                            .foregroundColor(.orange)
+                            .symbolEffect(.pulse)
+                        
+                        Text("Unable to load prices")
+                            .font(.headline).bold()
+                        
+                        Text("CoinGecko servers are busy. Please try again.")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                        
+                        Button {
+                            Task {
+                                await coinViewModel.getCoins()
+                            }
+                        } label: {
+                            Text("Try Again")
+                                .bold()
+                                .padding(.horizontal, 24)
+                                .padding(.vertical, 12)
+                                .background(Color.orange)
+                                .foregroundColor(.white)
+                                .cornerRadius(12)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(40)
                 }else{
                     List(coinViewModel.coins, id: \.id){ coin in
                         // One Item

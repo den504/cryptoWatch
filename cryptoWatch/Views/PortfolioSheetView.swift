@@ -103,7 +103,7 @@ struct PortfolioSheetView : View {
                 if amount > 0 {
                     coinViewModel.addToPortfolio(coinId: coin.id, amount: amount)
                     print("Saved \(amount) of \(coin.name) to portfolio")
-                    selectedTab = 2
+                    selectedTab = 2 // Switch to Portfolio tab after saving
                 }
                 dismiss()
             } label: {
