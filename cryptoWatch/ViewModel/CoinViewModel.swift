@@ -16,10 +16,12 @@ class CoinViewModel: ObservableObject {
     @Published var portfolioItems: [PortfolioItem] = []
     @Published var totalPortfolioValue: Double = 0
     @Published var selectedCoin: Coin? = nil
+    @Published var chartData: [CoinChart] = []
     
     private let coinService = CoinAPIService()
     private var wm: WatchListManager  // ← new
     private var portfolioManager: PortfolioManager
+    private let chartService = ChartAPIService()
     
     init(context: ModelContext) {  // ← now accepts SwiftData context
         self.wm = WatchListManager(context: context)
@@ -106,6 +108,89 @@ class CoinViewModel: ObservableObject {
     }
     func selectCoin(_ coin: Coin){
         selectedCoin = coin
+    }
+    
+    func fetchChartData (for coinId: String, filter: String) async {
+        let days: String
+        switch filter {
+            case "1W": days = "7"
+            case "1M": days = "30"
+//            case "1Y": days = "365"
+            default: days = "1"
+        }
+        
+        do {
+            chartData = try await chartService.fetchChartData(coinId: coinId, days: days)
+            print("Chart points loaded: \( chartData.count)")  // ← add this
+            print("First price: \( chartData.first?.price ?? 0)")  // ← add this
+            print("Last price: \( chartData.last?.price ?? 0)")   // ← add this
+//            chartData = data
+        } catch{
+            handleError(error)
+            print("Chart error: \(error)")
+        }
+    }
+    
+    func fetchPortfolioChart(days: String = "7") async -> [PortfolioPoint] {
+        let items = portfolioItems
+        guard !items.isEmpty else { return [] }
+
+        var allData: [[CoinChart]] = []
+
+        await withTaskGroup(of: [CoinChart]?.self) { group in
+            
+            for item in items {
+                group.addTask {
+                    do {
+                        let data = try await self.chartService.fetchChartData(
+                            coinId: item.coin.id,
+                            days: days
+                        )
+                        
+                        // adjust for amount owned
+                        return data.map {
+                            CoinChart(
+                                timestamp: $0.timestamp,
+                                price: $0.price * item.amount
+                            )
+                        }
+                        
+                    } catch {
+                        print("Error fetching \(item.coin.id):", error)
+                        return nil
+                    }
+                }
+            }
+            
+            for await result in group {
+                if let result {
+                    allData.append(result)
+                }
+            }
+        }
+
+        return combinePortfolioData(allData)
+    }
+    
+    
+    func combinePortfolioData(_ data: [[CoinChart]]) -> [PortfolioPoint] {
+        guard let first = data.first else { return [] }
+        
+        var result: [PortfolioPoint] = []
+        
+        for i in 0..<first.count {
+            let time = first[i].timestamp
+            let totalValue = data.reduce(0) { sum, coinData in
+                if i < coinData.count {
+                    return sum + coinData[i].price
+                }
+                return sum
+            }
+            
+            result.append(PortfolioPoint(time: time, value: totalValue))
+        }
+        
+        return result
     }
     
     

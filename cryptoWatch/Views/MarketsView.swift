@@ -49,13 +49,39 @@ struct MarketsView: View {
                     if isLoading{
                         Text("Loading coins...")
                     }else if let error = coinViewModel.errorMessage{
-                        Text("Error \(error)").foregroundStyle(.red)
+                        VStack(spacing: 16) {
+                            Image(systemName: "wifi.exclamationmark")
+                                .font(.system(size: 50))
+                                .foregroundColor(.orange)
+                                .symbolEffect(.pulse)
+                            
+                            Text("Unable to load prices")
+                                .font(.headline).bold()
+                            
+                            Text(error)
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .multilineTextAlignment(.center)
+                            
+                            Button {
+                                Task {
+                                    await coinViewModel.getCoins()
+                                }
+                            } label: {
+                                Text("Try Again")
+                                    .bold()
+                                    .padding(.horizontal, 24)
+                                    .padding(.vertical, 12)
+                                    .background(Color.orange)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(12)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(40)
                     }else{
                         List(filteredCoins, id: \.id){ coin in
-                            // One Item
-                            // NavigationLink(destination: CoinDetailView(coin: coin)) {
                             HStack{
-                                
                                 if let imageURL =  URL(string: coin.image), !coin.image.isEmpty{
                                     AsyncImage(url: imageURL) { image in
                                         image
@@ -66,12 +92,9 @@ struct MarketsView: View {
                                     }
                                     .frame(width: 40, height: 40)
                                     .clipShape(Circle())
-                                    
                                 } else {
-                                    
-                                    Circle().fill(Color.blue).frame(width:50, height: 50).overlay(Text(String(coin.name.prefix(1))).font(.title).foregroundColor(.white)).padding(.trailing, 6)
+                                    Circle().fill(Color.blue).frame(width:40, height: 40).overlay(Text(String(coin.name.prefix(1))).font(.title).foregroundColor(.white)).padding(.trailing, 6)
                                 }
-                                
                                 
                                 VStack(alignment: .leading, spacing: 6){
                                     Text("\(coin.name)").font(.title2).fontWeight(.bold)
@@ -89,39 +112,28 @@ struct MarketsView: View {
                                     .padding(.horizontal, 6).padding(.vertical, 3).background(RoundedRectangle(cornerRadius: 20).fill(coin.priceChangePercentage24h > 0 ? Color.green.opacity(0.2): Color.red.opacity(0.2)))
                                 }.padding(.trailing, 15)
                                 
-                                
-                                //                            let isDisabled = coinViewModel.isInWatchlist(coin)
-                                //                            Button {
-                                //                                coinViewModel.addToWatchlist(coin)
-                                //                            } label: {
-                                //                                Text("+")
-                                //                                    .font(.title2)
-                                //                                    .foregroundColor(isDisabled ? .gray : .blue)
-                                //                                    .padding(10)
-                                //                                    .background(
-                                //                                        RoundedRectangle(cornerRadius: 50)
-                                //                                            .stroke(isDisabled ? Color.gray: Color.blue, lineWidth: 1)
-                                //                                            .fill(Color.blue.opacity(0.2)).frame(width: 30, height: 30)
-                                //                                    )
-                                //                            }
-                                //                            .buttonStyle(.plain).disabled(isDisabled)
-                                
                             }.frame(maxWidth: .infinity, alignment: .leading)
                                 .listRowInsets(EdgeInsets()).listRowSeparator(.hidden).padding(.leading, 5).padding(.vertical, 15).padding(.trailing, 15).listRowBackground(Color.clear).onTapGesture {
                                     selectedCoin = coin
                                 }
-                            // }.buttonStyle(.plain)
-                        }.listStyle(.plain).scrollContentBackground(.automatic).navigationDestination(item: $selectedCoin) { coin in
+                        }
+                        .listStyle(.plain)
+                        .scrollContentBackground(.automatic)
+                        .navigationDestination(item: $selectedCoin) { coin in
                             CoinDetailView(selectedTab: $selectedTab, coin: coin ).onDisappear {
                                 selectedCoin = nil
                             }
                         }
                     }
-                }.padding(.horizontal, 10).padding(.top, 5).foregroundColor(.white)
-                //                .navigationTitle("Live Prices").navigationBarTitleDisplayMode(.large)
+                }
+                .padding(.horizontal, 10)
+                .padding(.top, 5)
+                .foregroundColor(.white)
             }
-            
-        }.searchable(text: $searchText, prompt: "Search coins").preferredColorScheme(.dark).padding(0)
+        }
+        .searchable(text: $searchText, prompt: "Search coins")
+        .preferredColorScheme(.dark)
+        .padding(0)
     }
 }
 

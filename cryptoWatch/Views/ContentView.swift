@@ -7,7 +7,7 @@
 
 import SwiftUI
 struct ContentView: View {
-    @State private var selectedTab = 2  // ← owns the number
+    @State private var selectedTab = 0  // ← owns the number
 
     var body: some View {
         TabView(selection: $selectedTab) {  // ← watches the number
