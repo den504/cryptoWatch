@@ -54,6 +54,9 @@ extension Coin {
         abbreviate(marketCap, "£")
     }
     
+    var formattedCurrentPrice: String {
+        abbreviate(currentPrice, "£")
+    }
     var formattedTotalVolume: String {
         abbreviate(totalVolume, "£" )
     }

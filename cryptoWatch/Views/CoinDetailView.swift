@@ -4,14 +4,15 @@
 //
 //  Created by Chidubem Obinwanne on 10/04/2026.
 //
-
 import SwiftUI
+import Charts
 
 struct CoinDetailView: View {
     @EnvironmentObject var coinViewModel: CoinViewModel
     @Environment(\.dismiss) var dismiss
     @State private var showPortfolioSheet = false
     @State private var holdingAmount: String = ""
+    @State private var selectedFilter: String = "1M"
     @Binding var selectedTab: Int
     
     let coin: Coin
@@ -141,6 +142,7 @@ struct CoinDetailView: View {
         }
     }
 }
+
 
 #Preview {
 //    CoinDetailView().preferredColorScheme(.dark)
