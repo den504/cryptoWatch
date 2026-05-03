@@ -12,7 +12,9 @@
 
 /* Begin PBXFileReference section */
 		569EC1472F70E5230088E518 /* README.MD */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.MD; sourceTree = "<group>"; };
-		56E776052FA54F53005E1983 /* cryptoWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cryptoWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+
+		665CF3CA2F98AA3100AEC0D9 /* cryptoWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cryptoWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -39,7 +41,8 @@
 			children = (
 				569EC1472F70E5230088E518 /* README.MD */,
 				569EC1372F70E2760088E518 /* cryptoWatch */,
-				56E776052FA54F53005E1983 /* cryptoWatch.app */,
+				665CF3CA2F98AA3100AEC0D9 /* cryptoWatch.app */,
+
 			);
 			sourceTree = "<group>";
 		};
@@ -65,7 +68,8 @@
 			packageProductDependencies = (
 			);
 			productName = cryptoWatch;
-			productReference = 56E776052FA54F53005E1983 /* cryptoWatch.app */;
+			productReference = 665CF3CA2F98AA3100AEC0D9 /* cryptoWatch.app */;
+
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
