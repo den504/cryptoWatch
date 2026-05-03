@@ -82,6 +82,7 @@ struct MarketsView: View {
                     }else{
                         List(filteredCoins, id: \.id){ coin in
                             HStack{
+
                                 if let imageURL =  URL(string: coin.image), !coin.image.isEmpty{
                                     AsyncImage(url: imageURL) { image in
                                         image

@@ -199,6 +199,7 @@ struct CoinDetailView: View {
         .task {
             coinViewModel.chartData = []
             await coinViewModel.fetchChartData(for: coin.id, filter: "1D")
+
         }
     }
 }
