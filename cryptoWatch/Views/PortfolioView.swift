@@ -148,10 +148,11 @@ struct PortfolioView: View {
                                             Text(item.value.formatted(.currency(code: "GBP").precision(.fractionLength(0))))
                                                 .bold()
 //                                                .foregroundColor(.black)
-                                            let priceChange = item.coin.priceChangePercentage24h ?? 0
-                                            Text("\(priceChange >= 0 ? "+" : "")\(priceChange.formatted(.number.precision(.fractionLength(1))))%")
+                                            let change = item.coin.priceChangePercentage24h ?? 0
+                                            
+                                            Text("\(change >= 0 ? "+" : "")\(change.formatted(.number.precision(.fractionLength(1))))%")
                                                 .font(.caption)
-                                                .foregroundColor(priceChange >= 0 ? .green : .red)
+                                                .foregroundColor(change >= 0 ? .green : .red)
                                         }
                                     }
                                     .padding(.horizontal)
