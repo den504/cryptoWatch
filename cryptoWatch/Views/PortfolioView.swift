@@ -4,6 +4,7 @@ import Charts
 
 struct PortfolioView: View {
     @EnvironmentObject var coinViewModel: CoinViewModel
+    @EnvironmentObject var portfolioViewModel: PortfolioViewModel
     @State private var itemToDelete: String? = nil
     @State private var selectedItem: PortfolioItem? = nil
     @Binding var selectedTab: Int
@@ -32,7 +33,7 @@ struct PortfolioView: View {
                             Text("TOTAL VALUE")
                                 .font(.callout)
                                 .foregroundColor(.gray)
-                            Text(coinViewModel.totalPortfolioValue.formatted(.currency(code: "GBP")))
+                            Text(portfolioViewModel.totalPortfolioValue.formatted(.currency(code: "GBP")))
                                 .font(.system(size: 40, weight: .bold))
                         }
                         .padding(.top)
@@ -96,7 +97,7 @@ struct PortfolioView: View {
                         .padding(.vertical, 8)
                         
                         // MARK: Holdings list
-                        if coinViewModel.portfolioItems.isEmpty {
+                        if portfolioViewModel.portfolioItems.isEmpty {
                             VStack(spacing: 12) {
                                 Image(systemName: "wallet.pass")
                                     .font(.system(size: 40))
@@ -117,13 +118,13 @@ struct PortfolioView: View {
                                         .font(.headline).bold()
                                         .foregroundColor(.black)
                                     Spacer()
-                                    Text("\(coinViewModel.portfolioItems.count) coins")
+                                    Text("\(portfolioViewModel.portfolioItems.count) coins")
                                         .font(.caption)
                                         .foregroundColor(.black)
                                 }
                                 .padding(.horizontal)
                                 
-                                ForEach(coinViewModel.portfolioItems) { item in
+                                ForEach(portfolioViewModel.portfolioItems) { item in
                                     HStack(spacing: 12) {
                                         AsyncImage(url: URL(string: item.coin.image)) { image in
                                             image.resizable()
@@ -163,20 +164,14 @@ struct PortfolioView: View {
                                     }
                                     .alert("Delete \(item.coin.name)?", isPresented: .constant(itemToDelete == item.id)){
                                         Button("Delete", role: .destructive) {
-                                            coinViewModel.removeFromPortfolio(coinId: item.coin.id)
+                                            portfolioViewModel.removeFromPortfolio(coinId: item.coin.id)
                                             itemToDelete = nil
                                         }
                                         Button ("Cancel", role: .cancel){
                                             itemToDelete = nil
                                         }
                                     }
-                                    //                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    //                                    Button(role: .destructive) {
-                                    //                                        coinViewModel.removeFromPortfolio(coinId: item.coin.id)
-                                    //                                    } label: {
-                                    //                                        Image(systemName: "trash.fill")
-                                    //                                    }
-                                    //                                }
+
                                 }
                             }
                         }
@@ -186,10 +181,11 @@ struct PortfolioView: View {
                 .navigationBarHidden(true)
                 .sheet(item: $selectedItem){item in
                     PortfolioSheetView(coin: item.coin, existingAmount: item.amount, selectedTab: $selectedTab)
-                        .environmentObject(coinViewModel)
+                        .environmentObject(portfolioViewModel)
                         .presentationDetents([.medium])
                     
                 }.task{
+                    portfolioViewModel.updateCoinsData(coinViewModel.allCoins)
                     await loadChart()
                 }
             
@@ -201,7 +197,7 @@ struct PortfolioView: View {
         isLoadingChart = true
         
         let days = daysFromFilter(selectedFilter)
-        chartData = await coinViewModel.fetchPortfolioChart(days: days)
+        chartData = await portfolioViewModel.fetchPortfolioChart(days: days)
         
         isLoadingChart = false
     }
