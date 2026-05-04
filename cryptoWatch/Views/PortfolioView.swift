@@ -117,21 +117,6 @@ struct PortfolioView: View {
                                         .font(.headline).bold()
                                         .foregroundColor(.black)
                                     Spacer()
-                                    
-                                    VStack(alignment: .trailing) {
-                                        Text(item.value.formatted(.currency(code: "GBP").precision(.fractionLength(0))))
-                                            .bold()
-                                            .foregroundColor(.black)
-                                        if let change = item.coin.priceChangePercentage24h {
-                                            Text("\(change >= 0 ? "+" : "")\(change.formatted(.number.precision(.fractionLength(1))))%")
-                                                .font(.caption)
-                                                .foregroundColor(change >= 0 ? .green : .red)
-                                        } else {
-                                            Text("N/A")
-                                                .font(.caption)
-                                                .foregroundColor(.gray)
-                                        }
-                                    }
                                     Text("\(coinViewModel.portfolioItems.count) coins")
                                         .font(.caption)
                                         .foregroundColor(.black)

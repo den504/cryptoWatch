@@ -15,6 +15,7 @@ struct CoinDetailView: View {
     @State private var selectedFilter: String = "1D"
     @Binding var selectedTab: Int
     
+    
     let coin: Coin
     
     var body: some View {
@@ -64,12 +65,12 @@ struct CoinDetailView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(coin.formattedCurrentPrice)
                             .font(.system(size: 44)).fontWeight(.bold)
-                        
+                        let priceChange = coin.priceChangePercentage24h ?? 0
                         HStack {
-                            Image(systemName: coin.priceChangePercentage24h >= 0 ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
-                            Text("\(coin.priceChangePercentage24h >= 0 ? "+" : "")\(coin.priceChangePercentage24h, specifier: "%.2f")% (24h)")
+                            Image(systemName: priceChange >= 0 ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
+                            Text("\(priceChange >= 0 ? "+" : "")\(priceChange, specifier: "%.2f")% (24h)")
                         }
-                        .foregroundColor(coin.priceChangePercentage24h >= 0 ? .green : .red)
+                        .foregroundColor(priceChange >= 0 ? .green : .red)
                         .font(.title3).fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

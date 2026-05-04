@@ -91,11 +91,12 @@ struct WatchlistView: View {
                                     Spacer()
                                     
                                     VStack(alignment: .trailing, spacing: 6){
-                                        Text("£\(coin.currentPrice, specifier: "%.2f")").font(.title2).bold()
+                                        Text(coin.formattedCurrentPrice).font(.title2).bold()
                                         HStack{
-                                            Text("\(coin.priceChangePercentage24h >= 0 ? "+" : "")\(coin.priceChangePercentage24h, specifier: "%.2f")%")
+                                            let priceChange = coin.priceChangePercentage24h ?? 0
+                                            Text("\(priceChange >= 0 ? "+" : "")\(priceChange, specifier: "%.2f")%")
                                                 .font(.callout).fontWeight(.medium)
-                                                .foregroundColor(coin.priceChangePercentage24h < 0 ? .red : .green)
+                                                .foregroundColor(priceChange < 0 ? .red : .green)
                                         }
                                         .padding(.horizontal, 6).padding(.vertical, 3).background(RoundedRectangle(cornerRadius: 20).fill(Color.green.opacity(0.2)))
                                     }.padding(.trailing, 15)
