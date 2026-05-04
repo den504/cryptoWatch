@@ -82,7 +82,7 @@ struct MarketsView: View {
                     }else{
                         List(filteredCoins, id: \.id){ coin in
                             HStack{
-
+                                
                                 if let imageURL =  URL(string: coin.image), !coin.image.isEmpty{
                                     AsyncImage(url: imageURL) { image in
                                         image
@@ -93,9 +93,12 @@ struct MarketsView: View {
                                     }
                                     .frame(width: 40, height: 40)
                                     .clipShape(Circle())
+                                    
                                 } else {
-                                    Circle().fill(Color.blue).frame(width:40, height: 40).overlay(Text(String(coin.name.prefix(1))).font(.title).foregroundColor(.white)).padding(.trailing, 6)
+                                    
+                                    Circle().fill(Color.blue).frame(width:50, height: 50).overlay(Text(String(coin.name.prefix(1))).font(.title).foregroundColor(.white)).padding(.trailing, 6)
                                 }
+                                
                                 
                                 VStack(alignment: .leading, spacing: 6){
                                     Text("\(coin.name)").font(.title2).fontWeight(.bold)
@@ -104,38 +107,68 @@ struct MarketsView: View {
                                 Spacer()
                                 
                                 VStack(alignment: .trailing, spacing: 6){
-                                    Text("£\(coin.currentPrice ?? 0, specifier: "%.2f")").font(.title2).bold()
+
+                                    Text(coin.formattedCurrentPrice).font(.title2).bold()
                                     HStack{
-                                        let change = coin.priceChangePercentage24h ?? 0
-                                        Text("\(change > 0 ? "+" : "")\(change, specifier: "%.2f")%")
-                                            .font(.callout).fontWeight(.medium)
-                                            .foregroundColor(change <= 0 ? .red : .green)
+                                        if let change = coin.priceChangePercentage24h {
+                                            Text("\(change >= 0 ? "+" : "")\(change, specifier: "%.2f")%")
+                                                .font(.callout).fontWeight(.medium)
+                                                .foregroundColor(change < 0 ? .red : .green)
+                                        } else {
+                                            Text("N/A")
+                                                .font(.callout).fontWeight(.medium)
+                                                .foregroundColor(.gray)
+                                        }
                                     }
-                                    .padding(.horizontal, 6).padding(.vertical, 3).background(RoundedRectangle(cornerRadius: 20).fill((coin.priceChangePercentage24h ?? 0) > 0 ? Color.green.opacity(0.2): Color.red.opacity(0.2)))
+                                    .padding(.horizontal, 6).padding(.vertical, 3).background(RoundedRectangle(cornerRadius: 20).fill(Color.green.opacity(0.2)))
                                 }.padding(.trailing, 15)
                                 
+                                
+                                
                             }.frame(maxWidth: .infinity, alignment: .leading)
-                                .listRowInsets(EdgeInsets()).listRowSeparator(.hidden).padding(.leading, 5).padding(.vertical, 15).padding(.trailing, 15).listRowBackground(Color.clear).onTapGesture {
+                                .listRowInsets(EdgeInsets()).listRowSeparator(.hidden).padding(.leading, 5).padding(.vertical, 15).padding(.trailing, 15).onTapGesture {
                                     selectedCoin = coin
                                 }
+                            //                        }.buttonStyle(.plain)
+                        }.listStyle(.plain).scrollContentBackground(.hidden).navigationDestination(item: $selectedCoin) { coin in
+                            CoinDetailView(selectedTab: $selectedTab, coin: coin )
+                                .onDisappear {
+                                    selectedCoin = nil
+                                }
                         }
-                        .listStyle(.plain)
-                        .scrollContentBackground(.automatic)
-                        .navigationDestination(item: $selectedCoin) { coin in
-                            CoinDetailView(selectedTab: $selectedTab, coin: coin ).onDisappear {
-                                selectedCoin = nil
+                        
+                        HStack {
+                            Spacer()
+                            HStack(spacing: 8){
+                                ForEach (1...5, id: \.self) { page in
+                                    Button {
+                                        Task{
+                                            await coinViewModel.getCoins(page: page)
+                                        }
+                                    } label: {
+                                        Text("\(page)")
+                                            .font(.caption).bold()
+                                            .frame(width: 36, height: 36)
+                                            .background(coinViewModel.currentPage == page ? Color.blue : Color.gray.opacity(0.2))
+                                            .foregroundColor(coinViewModel.currentPage == page ? .white : .primary)
+                                            .cornerRadius(8)
+                                    }.disabled(coinViewModel.isLoading)
+                                    
+                                }
+                                
                             }
+                            Spacer()
                         }
+                        
                     }
-                }
-                .padding(.horizontal, 10)
-                .padding(.top, 5)
-                .foregroundColor(.white)
+                }.padding(.horizontal, 10).padding(.top, 20)
+                //                .navigationTitle("Live Prices").navigationBarTitleDisplayMode(.large)
             }
-        }
-        .searchable(text: $searchText, prompt: "Search coins")
-        .preferredColorScheme(.dark)
-        .padding(0)
+            
+            }.padding(.horizontal, 10)
+                .searchable(text: $searchText, prompt: "Search coins")
+                .preferredColorScheme(.dark)
+        
     }
 }
 

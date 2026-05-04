@@ -26,7 +26,8 @@ struct PortfolioItem: Identifiable {
     let coin: Coin
     let amount: Double
     var value: Double {
-        amount * (coin.currentPrice ?? 0)
+        guard let price = coin.currentPrice else {return 0}
+        return amount * price
     }
 }
 

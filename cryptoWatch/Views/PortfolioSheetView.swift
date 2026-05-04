@@ -18,6 +18,7 @@ struct PortfolioSheetView : View {
     var currentValue: Double {
         guard let price = coin.currentPrice else { return 0 }  // Handle nil case
         let amount = Double(holdingAmount) ?? 0
+        guard let price = coin.currentPrice else {return 0}
         return (amount * price).rounded()
     }
     
@@ -50,8 +51,8 @@ struct PortfolioSheetView : View {
                 
                 VStack(alignment: .leading) {
                     Text(coin.name).bold()
-//                    Text("Current price: \(coin.currentPrice.formatted(.currency(code: "GBP")))")
-                    Text("Current price: \(coin.currentPrice?.formatted(.currency(code: "GBP")) ?? "—")")
+
+                    Text("Current price: \(coin.formattedCurrentPrice)")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }

@@ -148,6 +148,7 @@ struct PortfolioView: View {
                                                 .bold()
 //                                                .foregroundColor(.black)
                                             let change = item.coin.priceChangePercentage24h ?? 0
+
                                             Text("\(change >= 0 ? "+" : "")\(change.formatted(.number.precision(.fractionLength(1))))%")
                                                 .font(.caption)
                                                 .foregroundColor(change >= 0 ? .green : .red)

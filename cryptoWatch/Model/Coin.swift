@@ -26,9 +26,11 @@ import Foundation
 
 struct Coin: Codable, Sendable, Identifiable, Hashable {
     let id, symbol, name, image: String
-    let currentPrice, priceChangePercentage24h, high24h, low24h, circulatingSupply, ath : Double?
-    let totalVolume,marketCap : Double?
-    let marketCapRank: Int?
+    let currentPrice: Double?
+    let priceChangePercentage24h: Double?
+    let high24h, low24h, circulatingSupply, ath: Double?
+    let totalVolume, marketCap: Double?
+    let marketCapRank: Int
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -51,29 +53,36 @@ struct Coin: Codable, Sendable, Identifiable, Hashable {
 
 extension Coin {
     var formattedMarketCap: String {
-        abbreviate(marketCap ?? 0, "£")
+        guard let marketcap = marketCap else {return "N/A"}
+        return abbreviate(marketcap, "£")
     }
     
     var formattedCurrentPrice: String {
-        abbreviate(currentPrice ?? 0, "£")
+        guard let currentprice = currentPrice else {return "N/A"}
+        return abbreviate(currentprice, "£")
     }
     var formattedTotalVolume: String {
-        abbreviate(totalVolume ?? 0, "£" )
+        guard let totalvolume = totalVolume else {return "N/A"}
+        return abbreviate(totalvolume, "£" )
     }
     
     var formattedHigh24h: String {
-        abbreviate(high24h ?? 0, "£")
+        guard let high = high24h else {return "N/A"}
+        return abbreviate(high, "£")
     }
     
     var formattedLow24h: String {
-        abbreviate(low24h ?? 0, "£")
+        guard let low = low24h else {return "N/A"}
+        return abbreviate(low, "£")
     }
     
     var formattedAth: String {
-        abbreviate(ath ?? 0, "£")
+        guard let ath = ath else{return "N/A"}
+        return abbreviate(ath, "£")
     }
     
     var formattedCirculatingSupply: String {
-        abbreviate(circulatingSupply ?? 0, "£")
+        guard let supply = circulatingSupply else {return "N/A"}
+        return abbreviate(supply, "£")
     }
 }
