@@ -12,35 +12,83 @@ import SwiftData
 class CoinViewModel: ObservableObject {
     @Published var coins: [Coin] = []
     @Published var watchlistCoins: [Coin] = []  // ← placed to get filtered coin array for watchList selected
+    @Published var allCoins: [Coin] = []
     @Published var errorMessage: String?
     @Published var portfolioItems: [PortfolioItem] = []
     @Published var totalPortfolioValue: Double = 0
     @Published var selectedCoin: Coin? = nil
     @Published var chartData: [CoinChart] = []
+    @Published var currentPage = 1
+    @Published var isLoading = false
     
     private let coinService = CoinAPIService()
     private var wm: WatchListManager  // ← new
     private var portfolioManager: PortfolioManager
     private let chartService = ChartAPIService()
+//    private var currentPage = 1
+//    private var hasMorePages = true
+    
     
     init(context: ModelContext) {  // ← now accepts SwiftData context
         self.wm = WatchListManager(context: context)
         self.portfolioManager = PortfolioManager(context: context)
+        
+        let savedCoins = loadFromDevice(key: "savedCoins")
+        if !savedCoins.isEmpty {
+            self.coins = savedCoins
+            self.allCoins = savedCoins
+            self.updateWatchlist()
+            self.updatePortfolio()
+        }
+        
+        //watchlist cache
+        let cachedWatchlist = loadFromDevice(key: "cachedWatchlist")
+        if !cachedWatchlist.isEmpty {
+            self.watchlistCoins = cachedWatchlist
+        }
+        
+        //portfolio cache
+        let cachedPortfolioCoins = loadFromDevice(key: "cachedPortfolioCoins")
+        if !cachedPortfolioCoins.isEmpty {
+            let savedPortfolio = portfolioManager.loadPortfolio()
+            self.portfolioItems = savedPortfolio.compactMap { item in
+                if let coin = cachedPortfolioCoins.first(where: { $0.id == item.coinId }) {
+                    return PortfolioItem(id: coin.id, coin: coin, amount: item.amount)
+                }
+                return nil
+            }
+            self.totalPortfolioValue = portfolioItems.reduce(0) { $0 + $1.value }
+        }
         Task {
             await getCoins()
         }
     }
     
-    func getCoins() async {
+    func getCoins(page: Int = 1) async {
+        guard !isLoading else {return}
+        isLoading = true
+        self.currentPage = page
         do {
-            
-            let coinData = try await coinService.fetchCoins()
+            let coinData = try await coinService.fetchCoins(page: page)
             self.coins = coinData
+            self.errorMessage = nil
+            mergeIntoAllCoins(coinData)
+            saveToDevice(coinData, key: "savedCoins")
             updateWatchlist()  // ← after coins load, build watchlist immediately
             updatePortfolio()
         } catch {
-            handleError(error)
+            let savedData = loadFromDevice(key: "savedCoins")
+            if !savedData.isEmpty {
+                self.coins = savedData
+                self.errorMessage = nil
+                updateWatchlist()
+                updatePortfolio()
+            }else{
+                handleError(error)
+            }
+            
         }
+        isLoading = false
     }
     
     // ← new: matches saved IDs against live coins
@@ -48,7 +96,8 @@ class CoinViewModel: ObservableObject {
         let savedIDs = wm.load()
         //filtering the required watchlist happens here called on the UI using
         //coinViewModel.watchlistCoins i.e having coinViewModel as the object from CoinViewModel
-        watchlistCoins = coins.filter { savedIDs.contains($0.id) }
+        watchlistCoins = allCoins.filter { savedIDs.contains($0.id) }
+        saveToDevice(watchlistCoins, key: "cachedWatchlist")
     }
     
     // ← new: called when user taps "Add to watchlist"
@@ -78,7 +127,7 @@ class CoinViewModel: ObservableObject {
         let portfolioCoins = portfolioManager.loadPortfolio()
 
         portfolioItems = portfolioCoins.compactMap { item in
-            if let coin = coins.first(where: { $0.id == item.coinId }) {
+            if let coin = allCoins.first(where: { $0.id == item.coinId }) {
                 return PortfolioItem(
                     id: coin.id,
                     coin: coin,
@@ -89,6 +138,7 @@ class CoinViewModel: ObservableObject {
         }
 
         totalPortfolioValue = portfolioItems.reduce(0) { $0 + $1.value }
+        saveToDevice(portfolioItems.map { $0.coin }, key: "cachedPortfolioCoins")
     }
     
     func addToPortfolio(coinId: String, amount: Double) {
@@ -109,6 +159,43 @@ class CoinViewModel: ObservableObject {
     func selectCoin(_ coin: Coin){
         selectedCoin = coin
     }
+
+    
+    
+    private func saveToDevice(_ coins: [Coin], key: String) {
+        do {
+            let encoded = try JSONEncoder().encode(coins)
+            UserDefaults.standard.set(encoded, forKey: key)
+        } catch {
+            print("Failed to save \(key): \(error)")
+        }
+    }
+    
+    private func loadFromDevice(key: String) -> [Coin] {
+        guard let data = UserDefaults.standard.data(forKey: key) else { return [] }
+        do {
+            return try JSONDecoder().decode([Coin].self, from: data)
+        } catch { return [] }
+    }
+    
+//    private func savePortfolioToDevice(_ items: [PortfolioItem]) {
+//        do {
+//            let coins = items.map { $0.coin}
+//            let encoded = try JSONEncoder().encode(coins)
+//            UserDefaults.standard.set(encoded, forKey: "cachedPortolio")
+//            
+//        }catch {
+//            
+//            print ("failed to save portfolio: \(error)")
+//        }
+//    }
+    
+//    private func loadPortfolioFromDevice() -> [Coin] {
+//        guard let data = UserDefaults.standard.data(forKey: "cachedPortfolio") else {return []}
+//        do {
+//            return try JSONDecoder().decode([Coin].self, from: data)
+//        }catch {return []}
+//    }
     
     func fetchChartData (for coinId: String, filter: String) async {
         let days: String
@@ -131,7 +218,41 @@ class CoinViewModel: ObservableObject {
         }
     }
     
+    private func mergeIntoAllCoins(_ newCoins: [Coin]) {
+        for coin in newCoins {
+            if let index = allCoins.firstIndex(where: { $0.id == coin.id }) {
+                allCoins[index] = coin  // ← update existing with fresh price
+            } else {
+                allCoins.append(coin)  // ← add new coin
+            }
+        }
+    }
     
+//    private func saveCoinsToDevice (_ coins: [Coin]) {
+//        do {
+//            let encoded = try JSONEncoder().encode(coins)
+//            UserDefaults.standard.set(encoded, forKey: "savedCoins")
+//        } catch {
+//            handleError(error)
+//        }
+//    }
+    
+//    private func loadCoinsFromDevice() -> [Coin] {
+//        guard let data = UserDefaults.standard.data(forKey: "savedCoins") else {
+//            return []
+//        }
+//        do {
+//            return try JSONDecoder().decode([Coin].self, from: data)
+//        }catch{
+//            handleError(error)
+//            return []
+//        }
+//    }
+    
+//    private func loadCachedData(){
+//        //watchlist saved
+//        let cachedWatchList = loadWatchlistFromDevice
+//    }
     
     private func handleError(_ error: Error) {
         switch error {

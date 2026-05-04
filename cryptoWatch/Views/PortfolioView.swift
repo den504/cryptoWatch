@@ -76,9 +76,15 @@ struct PortfolioView: View {
                                         Text(item.value.formatted(.currency(code: "GBP").precision(.fractionLength(0))))
                                             .bold()
                                             .foregroundColor(.black)
-                                        Text("\(item.coin.priceChangePercentage24h >= 0 ? "+" : "")\(item.coin.priceChangePercentage24h.formatted(.number.precision(.fractionLength(1))))%")
-                                            .font(.caption)
-                                            .foregroundColor(item.coin.priceChangePercentage24h >= 0 ? .green : .red)
+                                        if let change = item.coin.priceChangePercentage24h {
+                                            Text("\(change >= 0 ? "+" : "")\(change.formatted(.number.precision(.fractionLength(1))))%")
+                                                .font(.caption)
+                                                .foregroundColor(change >= 0 ? .green : .red)
+                                        } else {
+                                            Text("N/A")
+                                                .font(.caption)
+                                                .foregroundColor(.gray)
+                                        }
                                     }
                                 }
                                 .padding(.horizontal)

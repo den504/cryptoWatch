@@ -18,7 +18,8 @@ struct PortfolioSheetView : View {
     //compute VAR for current value
     var currentValue: Double {
         let amount = Double(holdingAmount) ?? 0
-        return (amount * coin.currentPrice).rounded()
+        guard let price = coin.currentPrice else {return 0}
+        return (amount * price).rounded()
     }
     
     
@@ -51,7 +52,7 @@ struct PortfolioSheetView : View {
                 
                 VStack(alignment: .leading) {
                     Text(coin.name).bold()
-                    Text("Current price: \(coin.currentPrice.formatted(.currency(code: "GBP")))")
+                    Text("Current price: \(coin.formattedCurrentPrice)")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
