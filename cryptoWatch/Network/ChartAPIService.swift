@@ -19,7 +19,8 @@ class ChartAPIService {
         
         urlComponents.queryItems = [
             URLQueryItem(name: "vs_currency", value: "gbp"),
-            URLQueryItem(name: "days", value: days)
+            URLQueryItem(name: "days", value: days),
+            URLQueryItem(name: "x_cg_demo_api_key", value: "CG-o1A5HnWNaNaCmQ5fPcRtm8j5")
         ]
         
         guard let url = urlComponents.url else {

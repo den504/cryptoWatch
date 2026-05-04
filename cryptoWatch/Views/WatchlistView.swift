@@ -65,9 +65,28 @@ struct WatchlistView: View {
                                     }
                                     
                                     
-                                    VStack(alignment: .leading, spacing: 6){
-                                        Text("\(coin.name)").font(.title2).fontWeight(.bold)
-                                        Text(coin.symbol).font(.subheadline).textCase(.uppercase)
+                                    Circle().fill(Color.blue).frame(width:50, height: 50).overlay(Text(String(coin.name.prefix(1))).font(.title).foregroundColor(.white)).padding(.trailing, 6)
+                                }
+                                
+                                
+                                VStack(alignment: .leading, spacing: 6){
+                                    Text("\(coin.name)").font(.title2).fontWeight(.bold)
+                                    Text(coin.symbol).font(.subheadline).textCase(.uppercase)
+                                }
+                                Spacer()
+                                
+                                VStack(alignment: .trailing, spacing: 6){
+                                    Text(coin.formattedCurrentPrice).font(.title2).bold()
+                                    HStack{
+                                        if let change = coin.priceChangePercentage24h {
+                                            Text("\(change >= 0 ? "+" : "")\(change, specifier: "%.2f")%")
+                                                .font(.callout).fontWeight(.medium)
+                                                .foregroundColor(change < 0 ? .red : .green)
+                                        } else {
+                                            Text("N/A")
+                                                .font(.callout).fontWeight(.medium)
+                                                .foregroundColor(.gray)
+                                        }
                                     }
                                     Spacer()
                                     
