@@ -119,6 +119,8 @@ class CoinViewModel: ObservableObject {
             errorMessage = "Server error. Please try again later"
         case NetworkError.invalidURL:
             errorMessage = "Invalid request"
+        case NetworkError.rateLimited:
+            errorMessage = "Too many requests. Please wait a minute before trying again."
         default:
             errorMessage = "Failed to load coin: \(error.localizedDescription)"
         }

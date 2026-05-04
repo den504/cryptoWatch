@@ -107,6 +107,7 @@ struct MarketsView: View {
                                 Spacer()
                                 
                                 VStack(alignment: .trailing, spacing: 6){
+
                                     Text(coin.formattedCurrentPrice).font(.title2).bold()
                                     HStack{
                                         if let change = coin.priceChangePercentage24h {

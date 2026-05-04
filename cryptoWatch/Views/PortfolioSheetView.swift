@@ -15,13 +15,12 @@ struct PortfolioSheetView : View {
     @Binding var selectedTab: Int
 
     
-    //compute VAR for current value
     var currentValue: Double {
+        guard let price = coin.currentPrice else { return 0 }  // Handle nil case
         let amount = Double(holdingAmount) ?? 0
         guard let price = coin.currentPrice else {return 0}
         return (amount * price).rounded()
     }
-    
     
     var body: some View {
         
@@ -52,6 +51,7 @@ struct PortfolioSheetView : View {
                 
                 VStack(alignment: .leading) {
                     Text(coin.name).bold()
+
                     Text("Current price: \(coin.formattedCurrentPrice)")
                         .font(.caption)
                         .foregroundColor(.gray)

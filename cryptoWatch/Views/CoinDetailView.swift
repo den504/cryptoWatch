@@ -67,6 +67,7 @@ struct CoinDetailView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(coin.formattedCurrentPrice)
                             .font(.system(size: 44)).fontWeight(.bold)
+
                         let priceChange = coin.priceChangePercentage24h ?? 0
                         HStack {
                             Image(systemName: priceChange >= 0 ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")

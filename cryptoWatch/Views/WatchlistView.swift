@@ -66,38 +66,19 @@ struct WatchlistView: View {
                                     }
                                     
                                     
-                                    Circle().fill(Color.blue).frame(width:50, height: 50).overlay(Text(String(coin.name.prefix(1))).font(.title).foregroundColor(.white)).padding(.trailing, 6)
-                                }
-                                
-                                
-                                VStack(alignment: .leading, spacing: 6){
-                                    Text("\(coin.name)").font(.title2).fontWeight(.bold)
-                                    Text(coin.symbol).font(.subheadline).textCase(.uppercase)
-                                }
-                                Spacer()
-                                
-                                VStack(alignment: .trailing, spacing: 6){
-                                    Text(coin.formattedCurrentPrice).font(.title2).bold()
-                                    HStack{
-                                        if let change = coin.priceChangePercentage24h {
-                                            Text("\(change >= 0 ? "+" : "")\(change, specifier: "%.2f")%")
-                                                .font(.callout).fontWeight(.medium)
-                                                .foregroundColor(change < 0 ? .red : .green)
-                                        } else {
-                                            Text("N/A")
-                                                .font(.callout).fontWeight(.medium)
-                                                .foregroundColor(.gray)
-                                        }
+                                    VStack(alignment: .leading, spacing: 6){
+                                        Text("\(coin.name)").font(.title2).fontWeight(.bold)
+                                        Text(coin.symbol).font(.subheadline).textCase(.uppercase)
                                     }
                                     Spacer()
                                     
                                     VStack(alignment: .trailing, spacing: 6){
-                                        Text(coin.formattedCurrentPrice).font(.title2).bold()
+                                        Text("£\(coin.currentPrice ?? 0, specifier: "%.2f")").font(.title2).bold()
                                         HStack{
-                                            let priceChange = coin.priceChangePercentage24h ?? 0
-                                            Text("\(priceChange >= 0 ? "+" : "")\(priceChange, specifier: "%.2f")%")
+                                            let change = coin.priceChangePercentage24h ?? 0
+                                            Text("\(change >= 0 ? "+" : "")\(change, specifier: "%.2f")%")
                                                 .font(.callout).fontWeight(.medium)
-                                                .foregroundColor(priceChange < 0 ? .red : .green)
+                                                .foregroundColor(change < 0 ? .red : .green)
                                         }
                                         .padding(.horizontal, 6).padding(.vertical, 3).background(RoundedRectangle(cornerRadius: 20).fill(Color.green.opacity(0.2)))
                                     }.padding(.trailing, 15)

@@ -42,7 +42,13 @@ class CoinAPIService{
             throw NetworkError.invalidURL
         }
         
+        if httpResponse.statusCode == 429 {
+            print("DEBUG: Rate limit reached (429)")
+            throw NetworkError.rateLimited
+        }
+        
         guard httpResponse.statusCode == 200 else {
+
             print("❌ HTTP Error: \(httpResponse.statusCode)")
             if let jsonString = String(data: data, encoding: .utf8) {
                 print("Response: \(jsonString)")
@@ -51,6 +57,7 @@ class CoinAPIService{
         }
         
         do{
+
             let coins = try JSONDecoder().decode([Coin].self, from: data)
             print("✅ Successfully decoded \(coins.count) coins")
             return coins
@@ -67,4 +74,5 @@ enum NetworkError: Error {
     case invalidData
     case decodingError
     case coinNotFound
+    case rateLimited
 }
