@@ -10,6 +10,8 @@ import Charts
 
 struct CoinDetailView: View {
     @EnvironmentObject var coinViewModel: CoinViewModel
+    @EnvironmentObject var watchlistViewModel: WatchlistViewModel
+    @EnvironmentObject var portfolioViewModel: PortfolioViewModel
     @Environment(\.dismiss) var dismiss
     @State private var showPortfolioSheet = false
     @State private var selectedFilter: String = "1D"
@@ -148,8 +150,8 @@ struct CoinDetailView: View {
                     }
                     
                     // MARK: Action Buttons
-                    let isAdded = coinViewModel.isInWatchlist(coin)
-                    let isInPortfolio = coinViewModel.isInPortfolio(coin)
+                    let isAdded = watchlistViewModel.isInWatchlist(coin)
+                    let isInPortfolio = portfolioViewModel.isInPortfolio(coin)
                     
                     HStack(spacing: 12) {
                         Button {
@@ -170,7 +172,7 @@ struct CoinDetailView: View {
                         .disabled(isInPortfolio)
                         
                         Button {
-                            coinViewModel.addToWatchlist(coin)
+                            watchlistViewModel.addToWatchlist(coin)
                         } label: {
                             HStack {
                                 Image(systemName: "bookmark.circle.fill")

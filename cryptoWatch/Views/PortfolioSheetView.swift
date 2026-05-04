@@ -8,7 +8,7 @@ import SwiftUI
 
 struct PortfolioSheetView : View {
     let coin: Coin //from the Market view, to the CoinDetail, to PortfolioSheetView
-    @EnvironmentObject var coinViewModel: CoinViewModel
+    @EnvironmentObject var portfolioViewModel: PortfolioViewModel
     @State private var holdingAmount: String = ""
     @Environment(\.dismiss) var dismiss
     var existingAmount: Double? = nil
@@ -102,7 +102,7 @@ struct PortfolioSheetView : View {
             Button {
                 let amount = Double(holdingAmount) ?? 0
                 if amount > 0 {
-                    coinViewModel.addToPortfolio(coinId: coin.id, amount: amount)
+                    portfolioViewModel.addToPortfolio(coinId: coin.id, amount: amount)
                     print("Saved \(amount) of \(coin.name) to portfolio")
                     selectedTab = 2 // Switch to Portfolio tab after saving
                 }

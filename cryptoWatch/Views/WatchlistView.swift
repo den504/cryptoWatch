@@ -9,14 +9,15 @@ import SwiftUI
 import SwiftData
 
 struct WatchlistView: View {
-    @EnvironmentObject var coinViewModel : CoinViewModel
+    @EnvironmentObject var coinViewModel: CoinViewModel
+    @EnvironmentObject var watchlistViewModel : WatchlistViewModel
     @Environment(\.modelContext) var context
     
     @State private var selectedCoin: Coin?
     @Binding var selectedTab: Int
     
     var isLoading: Bool {
-        coinViewModel.watchlistCoins.isEmpty && coinViewModel.errorMessage == nil
+        watchlistViewModel.watchlistCoins.isEmpty && watchlistViewModel.errorMessage == nil
     }
     
     var body: some View {
@@ -27,19 +28,19 @@ struct WatchlistView: View {
                     //        VStack{
                     Text("Watchlist").font(.largeTitle).fontWeight(.bold).padding(1).padding(.leading, 5)
                     
-                    Text("\(coinViewModel.watchlistCoins.count) coins saved").fontWeight(.semibold).foregroundColor(.gray)
+                    Text("\(watchlistViewModel.watchlistCoins.count) coins saved").fontWeight(.semibold).foregroundColor(.gray)
                         .padding(.horizontal, 10).padding(.bottom, 25)
                     //        }
                     //        .padding(.horizontal, 6).frame(maxWidth: .infinity, alignment: .leading)
                     
                     if isLoading{
                         Text("Loading coins...")
-                    }else if let error = coinViewModel.errorMessage{
+                    }else if let error = watchlistViewModel.errorMessage{
                         Text("Error \(error)").foregroundStyle(.red)
                     }else{
                         List{
                             
-                            ForEach(coinViewModel.watchlistCoins, id: \.id){ coin in
+                            ForEach(watchlistViewModel.watchlistCoins, id: \.id){ coin in
                                 // One Item
                                 
                                 
@@ -101,23 +102,6 @@ struct WatchlistView: View {
                                         .padding(.horizontal, 6).padding(.vertical, 3).background(RoundedRectangle(cornerRadius: 20).fill(Color.green.opacity(0.2)))
                                     }.padding(.trailing, 15)
                                     
-                                    
-                                    //                            let isDisabled = coinViewModel.isInWatchlist(coin)
-                                    //                            Button {
-                                    //                                coinViewModel.addToWatchlist(coin)
-                                    //                            } label: {
-                                    //                                Text("+")
-                                    //                                    .font(.title2)
-                                    //                                    .foregroundColor(isDisabled ? .gray : .blue)
-                                    //                                    .padding(10)
-                                    //                                    .background(
-                                    //                                        RoundedRectangle(cornerRadius: 50)
-                                    //                                            .stroke(isDisabled ? Color.gray: Color.blue, lineWidth: 1)
-                                    //                                            .fill(Color.blue.opacity(0.2)).frame(width: 30, height: 30)
-                                    //                                    )
-                                    //                            }
-                                    //                            .buttonStyle(.plain).disabled(isDisabled)
-                                    
                                 }.frame(maxWidth: .infinity, alignment: .leading)
                                     .listRowInsets(EdgeInsets()).listRowSeparator(.hidden).padding(.leading, 5).padding(.vertical, 15).padding(.trailing, 15).listRowBackground(Color.clear).onTapGesture {
                                         selectedCoin = coin
@@ -134,13 +118,16 @@ struct WatchlistView: View {
             }
             
         }
+        .task {
+            watchlistViewModel.updateCoinsData(coinViewModel.allCoins)
+        }
         }
     
     
     private func deleteItems(at offsets: IndexSet) {
         for index in offsets {
-            let coin = coinViewModel.watchlistCoins[index]
-            coinViewModel.removeFromWatchlist(coin)
+            let coin = watchlistViewModel.watchlistCoins[index]
+            watchlistViewModel.removeFromWatchlist(coin)
         }
     }
 }
