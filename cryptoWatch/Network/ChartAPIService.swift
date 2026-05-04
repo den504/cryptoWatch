@@ -28,8 +28,17 @@ class ChartAPIService {
         
         let(data, response) = try await URLSession.shared.data(from: url)
         
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw NetworkError.invalidResponse
+        }
+
+        if httpResponse.statusCode == 429 {
+            print("DEBUG: Chart API Rate limit reached (429)")
+            throw NetworkError.rateLimited
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            print("DEBUG: Chart API error with status code: \(httpResponse.statusCode)")
             throw NetworkError.invalidResponse
         }
         

@@ -65,11 +65,12 @@ struct CoinDetailView: View {
                         Text(coin.formattedCurrentPrice)
                             .font(.system(size: 44)).fontWeight(.bold)
                         
+                        let change = coin.priceChangePercentage24h ?? 0
                         HStack {
-                            Image(systemName: coin.priceChangePercentage24h >= 0 ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
-                            Text("\(coin.priceChangePercentage24h >= 0 ? "+" : "")\(coin.priceChangePercentage24h, specifier: "%.2f")% (24h)")
+                            Image(systemName: change >= 0 ? "arrowtriangle.up.fill" : "arrowtriangle.down.fill")
+                            Text("\(change >= 0 ? "+" : "")\(change, specifier: "%.2f")% (24h)")
                         }
-                        .foregroundColor(coin.priceChangePercentage24h >= 0 ? .green : .red)
+                        .foregroundColor(change >= 0 ? .green : .red)
                         .font(.title3).fontWeight(.semibold)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

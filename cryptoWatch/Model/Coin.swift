@@ -26,9 +26,9 @@ import Foundation
 
 struct Coin: Codable, Sendable, Identifiable, Hashable {
     let id, symbol, name, image: String
-    let currentPrice, priceChangePercentage24h, high24h, low24h, circulatingSupply, ath : Double
-    let totalVolume,marketCap : Double
-    let marketCapRank: Int
+    let currentPrice, priceChangePercentage24h, high24h, low24h, circulatingSupply, ath : Double?
+    let totalVolume,marketCap : Double?
+    let marketCapRank: Int?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -51,29 +51,29 @@ struct Coin: Codable, Sendable, Identifiable, Hashable {
 
 extension Coin {
     var formattedMarketCap: String {
-        abbreviate(marketCap, "£")
+        abbreviate(marketCap ?? 0, "£")
     }
     
     var formattedCurrentPrice: String {
-        abbreviate(currentPrice, "£")
+        abbreviate(currentPrice ?? 0, "£")
     }
     var formattedTotalVolume: String {
-        abbreviate(totalVolume, "£" )
+        abbreviate(totalVolume ?? 0, "£" )
     }
     
     var formattedHigh24h: String {
-        abbreviate(high24h, "£")
+        abbreviate(high24h ?? 0, "£")
     }
     
     var formattedLow24h: String {
-        abbreviate(low24h, "£")
+        abbreviate(low24h ?? 0, "£")
     }
     
     var formattedAth: String {
-        abbreviate(ath, "£")
+        abbreviate(ath ?? 0, "£")
     }
     
     var formattedCirculatingSupply: String {
-        abbreviate(circulatingSupply, "£")
+        abbreviate(circulatingSupply ?? 0, "£")
     }
 }

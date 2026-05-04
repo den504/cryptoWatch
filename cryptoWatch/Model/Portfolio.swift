@@ -26,7 +26,7 @@ struct PortfolioItem: Identifiable {
     let coin: Coin
     let amount: Double
     var value: Double {
-        amount * coin.currentPrice
+        amount * (coin.currentPrice ?? 0)
     }
 }
 

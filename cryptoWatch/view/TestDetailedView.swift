@@ -25,12 +25,12 @@ struct TestDetailedView: View {
             if let coin = coinViewModel.selectedCoin {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(coin.name).bold()
-                    Text("Price: £\(coin.currentPrice, specifier: "%.2f")")
-                    Text("High: £\(coin.high24h, specifier: "%.2f")")
-                    Text("Low: £\(coin.low24h, specifier: "%.2f")")
-                    Text("ATH: £\(coin.ath, specifier: "%.2f")")
-                    Text("Market Cap: £\(coin.marketCap, specifier: "%.0f")")
-                    Text("Volume: £\(coin.totalVolume, specifier: "%.0f")")
+                    Text("Price: £\(coin.currentPrice ?? 0, specifier: "%.2f")")
+                    Text("High: £\(coin.high24h ?? 0, specifier: "%.2f")")
+                    Text("Low: £\(coin.low24h ?? 0, specifier: "%.2f")")
+                    Text("ATH: £\(coin.ath ?? 0, specifier: "%.2f")")
+                    Text("Market Cap: £\(coin.marketCap ?? 0, specifier: "%.0f")")
+                    Text("Volume: £\(coin.totalVolume ?? 0, specifier: "%.0f")")
                     Text("Rank: #\(coin.marketCapRank)")
                 }
                 .padding()
