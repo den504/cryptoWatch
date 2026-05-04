@@ -13,6 +13,8 @@ struct CoinChart: Identifiable, Hashable, Sendable {
     let price: Double
 }
 
-struct ChartReponse: Codable {
+struct ChartReponse: Codable, Sendable {
     let prices: [[Double]]
 }
+
+

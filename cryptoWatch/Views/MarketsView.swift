@@ -12,10 +12,20 @@ struct MarketsView: View {
     @EnvironmentObject var coinViewModel: CoinViewModel
     @Environment(\.modelContext) var context
     
+    @State private var searchText = ""
     @State private var selectedCoin: Coin?
     @Binding var selectedTab: Int
    
-    
+    var filteredCoins: [Coin] {
+        if searchText.isEmpty {
+            return coinViewModel.coins
+        } else {
+            return coinViewModel.coins.filter {
+                $0.name.localizedCaseInsensitiveContains(searchText) ||
+                $0.symbol.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+    }
     
     var isLoading: Bool {
         coinViewModel.coins.isEmpty && coinViewModel.errorMessage == nil
@@ -23,8 +33,11 @@ struct MarketsView: View {
     
     var body: some View {
         NavigationStack{
+            ZStack{
+                Color.black.ignoresSafeArea()
+                
                 VStack(alignment: .leading){
-                    Text("Live Prices").font(.largeTitle).fontWeight(.bold)
+                    Text("Live Prices").font(.largeTitle).fontWeight(.bold).padding(1)
                     
                     HStack{
                         Circle().fill(Color.green).frame(width: 10, height: 10)
@@ -32,12 +45,10 @@ struct MarketsView: View {
                     }.padding(.horizontal, 15).padding(.vertical, 5).background(RoundedRectangle(cornerRadius: 20).fill(Color.green.opacity(0.2))
                         .stroke(Color.green, lineWidth: 2)).padding(.bottom, 25)
                     
-                    //Loading
+                    
                     if isLoading{
                         Text("Loading coins...")
-                        
-                    //if server error
-                    }else if coinViewModel.errorMessage != nil{
+                    }else if let error = coinViewModel.errorMessage{
                         VStack(spacing: 16) {
                             Image(systemName: "wifi.exclamationmark")
                                 .font(.system(size: 50))
@@ -47,14 +58,14 @@ struct MarketsView: View {
                             Text("Unable to load prices")
                                 .font(.headline).bold()
                             
-                            Text("CoinGecko servers are busy. Please try again.")
+                            Text(error)
                                 .font(.caption)
                                 .foregroundColor(.gray)
                                 .multilineTextAlignment(.center)
                             
                             Button {
                                 Task {
-                                    await coinViewModel.getCoins() //called with or without int page
+                                    await coinViewModel.getCoins()
                                 }
                             } label: {
                                 Text("Try Again")
@@ -68,14 +79,10 @@ struct MarketsView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .padding(40)
-                        
-                    //no issues Load Market view
                     }else{
-                        List(coinViewModel.coins, id: \.id){ coin in
-                            // One Item
-                            //                        NavigationLink(destination: CoinDetailView(coin: coin)) {
+                        List(filteredCoins, id: \.id){ coin in
                             HStack{
-                                
+
                                 if let imageURL =  URL(string: coin.image), !coin.image.isEmpty{
                                     AsyncImage(url: imageURL) { image in
                                         image
