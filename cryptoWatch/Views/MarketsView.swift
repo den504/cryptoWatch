@@ -82,7 +82,7 @@ struct MarketsView: View {
                     }else{
                         List(filteredCoins, id: \.id){ coin in
                             HStack{
-
+                                
                                 if let imageURL =  URL(string: coin.image), !coin.image.isEmpty{
                                     AsyncImage(url: imageURL) { image in
                                         image
@@ -131,6 +131,9 @@ struct MarketsView: View {
                             //                        }.buttonStyle(.plain)
                         }.listStyle(.plain).scrollContentBackground(.hidden).navigationDestination(item: $selectedCoin) { coin in
                             CoinDetailView(selectedTab: $selectedTab, coin: coin )
+                                .onDisappear {
+                                    selectedCoin = nil
+                                }
                         }
                         
                         HStack {
@@ -155,12 +158,15 @@ struct MarketsView: View {
                             }
                             Spacer()
                         }
-                            
+                        
                     }
                 }.padding(.horizontal, 10).padding(.top, 20)
                 //                .navigationTitle("Live Prices").navigationBarTitleDisplayMode(.large)
+            }
             
             }.padding(.horizontal, 10)
+                .searchable(text: $searchText, prompt: "Search coins")
+                .preferredColorScheme(.dark)
         
     }
 }
